@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOZOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" type="image/png" href="./img/image.png">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Unbounded', 'sans-serif'],
+          body: ['Manrope', 'sans-serif'],
+        },
+        maxWidth: { app: 'full' }
+      }
+    }
+  }
+</script>
+<style>
+  :root{
+    --bg:#121214;
+    --surface:#1B1B1F;
+    --surface-2:#232328;
+    --border:#2E2E32;
+    --text:#EDEDEF;
+    --text-muted:#9A9AA2;
+    --accent:#2DD4BF;
+    --accent-ink:#06261F;
+    --accent-2:#E8A33D;
+    --danger:#E2574C;
+  }
+  [data-theme="light"]{
+    --bg:#F6F4EE;
+    --surface:#FFFFFF;
+    --surface-2:#EFEBE0;
+    --border:#E1DBCB;
+    --text:#1B1A17;
+    --text-muted:#6B6559;
+  }
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Manrope',sans-serif;
+    transition:background .25s ease, color .25s ease;
+  }
+  ::selection{background:var(--accent);color:var(--accent-ink);}
+  .no-scrollbar::-webkit-scrollbar{display:none;}
+  .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
+  .ikat{
+    height:8px;width:100%;
+    background-image: linear-gradient(135deg, var(--accent) 25%, transparent 25%), linear-gradient(225deg, var(--accent) 25%, transparent 25%), linear-gradient(45deg, var(--accent-2) 25%, transparent 25%), linear-gradient(315deg, var(--accent-2) 25%, transparent 25%);
+    background-position: 8px 0, 8px 0, 0 0, 0 0;
+    background-size: 16px 16px;
+    background-repeat: repeat-x;
+    opacity:.85;
+  }
+  .toast{
+    transform:translateX(-50%) translateY(20px);
+    opacity:0;pointer-events:none;
+    transition:all .25s ease;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .overlay{display:none;}
+  .overlay.show{display:flex;}
+  .card{transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;}
+  .card:hover{transform:translateY(-3px);box-shadow:0 12px 30px -12px rgba(0,0,0,.55);border-color:var(--accent);}
+</style>
+</head>
+<body class="pb-24 max-w-app mx-auto">
+
+<!-- NAVBAR -->
+<div class="fixed top-0 left-0 right-0 z-[100] bg-[var(--surface)] border-b border-[var(--border)]">
+  <div class="max-w-app mx-auto px-3 pt-3 pb-2 flex flex-col gap-2">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-[var(--accent)] text-[var(--accent-ink)] flex items-center justify-center font-extrabold text-sm font-display">B</div>
+        <div class="text-base font-bold tracking-wide font-display">BOZOR</div>
+      </div>
+      <div class="flex items-center gap-1.5 flex-shrink-0">
+        <select id="langSelect" onchange="setLang(this.value)" class="bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md px-1.5 py-1.5 text-xs font-semibold">
+          <option value="uz">UZ</option>
+          <option value="ru">RU</option>
+          <option value="en">EN</option>
+        </select>
+        <button id="themeBtn" onclick="toggleTheme()" title="Dark/Light mode" class="w-8 h-8 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center text-sm">🌙</button>
+        <button onclick="openAddModal()" class="bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg px-2.5 py-1.5 font-extrabold text-xs flex items-center gap-1 whitespace-nowrap">
+          <span>＋</span><span data-i18n="sell_btn">Sotish</span>
+        </button>
+      </div>
+    </div>
+    <div class="flex items-center bg-[var(--surface-2)] border border-[var(--border)] rounded-full pl-3 pr-1">
+      <span class="text-sm">🔍</span>
+      <input id="searchInput" type="text" data-i18n-ph="search_ph" class="flex-1 bg-transparent border-none outline-none text-[var(--text)] px-2 py-2 text-sm">
+      <button onclick="renderGrid()" data-i18n="search_btn" class="bg-[var(--accent)] text-[var(--accent-ink)] rounded-full px-3 py-1.5 font-bold text-xs">Qidirish</button>
+    </div>
+  </div>
+  <div id="catRow" class="max-w-app mx-auto px-3 pb-2 flex gap-1.5 overflow-x-auto no-scrollbar"></div>
+  <div class="ikat"></div>
+</div>
+<br>
+<!-- spacer for fixed navbar -->
+<div class="h-[128px]"></div>
+
+<!-- HERO -->
+<div class="max-w-app mx-auto px-3 pt-4 pb-3">
+  <h1 data-i18n="hero_title" class="font-display text-xl leading-tight mb-2">Kerakli narsani toping — yoki keraksizini soting</h1>
+  <p data-i18n="hero_sub" class="text-[var(--text-muted)] text-xs mb-1">Toshkentdan Andijongacha — minglab e'lonlar bir joyda.</p>
+  <div id="statLine" class="text-[11px] text-[var(--accent-2)] font-bold mt-2"></div>
+</div>
+
+<!-- GRID -->
+<div class="max-w-app mx-auto px-3 pb-16">
+  <div class="flex items-center justify-between my-3">
+    <h2 data-i18n="listings_title" class="text-base font-bold m-0">E'lonlar</h2>
+    <span id="resultCount" class="text-xs text-[var(--text-muted)] font-semibold"></span>
+  </div>
+  <div id="grid" class="grid grid-cols-2 gap-2.5"></div>
+  <div id="emptyState" class="text-center py-12 px-4 text-[var(--text-muted)]" style="display:none;">
+    <span class="text-3xl block mb-2">📭</span>
+    <div data-i18n="empty_title">Hech narsa topilmadi</div>
+  </div>
+</div>
+
+<footer class="border-t border-[var(--border)] py-5 px-3 text-center text-[var(--text-muted)] text-xs">
+  <div data-i18n="footer_text">BOZOR — odamlar o'z mahsulotlarini sotadigan va sotib oladigan joy.</div>
+</footer>
+
+<!-- ADD LISTING MODAL -->
+<div class="overlay fixed inset-0 bg-black/60 z-[200] items-center justify-center p-4" id="addOverlay">
+  <div class="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-app max-h-[88vh] overflow-y-auto p-4">
+    <button class="absolute top-3 right-3 bg-transparent border-none text-[var(--text-muted)] text-lg" onclick="closeModal('addOverlay')">✕</button>
+    <h3 data-i18n="add_title" class="text-base font-bold mb-3 font-display">Yangi e'lon joylash</h3>
+
+    <div class="mb-3">
+      <label data-i18n="lbl_title" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Sarlavha</label>
+      <input id="fTitle" type="text" data-i18n-ph="ph_title" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none">
+    </div>
+
+    <div class="flex gap-2 mb-3">
+      <div class="flex-1">
+        <label data-i18n="lbl_price" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Narxi (so'm)</label>
+        <input id="fPrice" type="number" placeholder="0" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none">
+      </div>
+      <div class="flex-1">
+        <label data-i18n="lbl_category" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Kategoriya</label>
+        <select id="fCategory" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none"></select>
+      </div>
+    </div>
+
+    <div class="flex gap-2 mb-3">
+      <div class="flex-1">
+        <label data-i18n="lbl_location" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Manzil</label>
+        <select id="fLocation" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none"></select>
+      </div>
+      <div class="flex-1">
+        <label data-i18n="lbl_phone" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Telefon raqami</label>
+        <input id="fPhone" type="tel" data-i18n-ph="ph_phone" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label data-i18n="lbl_photo" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Rasm</label>
+      <input id="fPhoto" type="file" accept="image/*" onchange="previewPhoto(event)" class="w-full text-xs text-[var(--text)]">
+      <img id="photoPreview" class="hidden mt-2 w-full h-32 object-cover rounded-lg border border-[var(--border)]">
+    </div>
+
+    <div class="mb-3">
+      <label data-i18n="lbl_desc" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Tavsif</label>
+      <textarea id="fDesc" data-i18n-ph="ph_desc" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none resize-y min-h-[70px]"></textarea>
+    </div>
+
+    <div class="flex gap-2 mt-1.5">
+      <button class="flex-1 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg py-3 font-bold text-sm" onclick="closeModal('addOverlay')" data-i18n="btn_cancel">Bekor qilish</button>
+      <button class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] border-none rounded-lg py-3 font-extrabold text-sm" onclick="submitListing()" data-i18n="btn_publish">Joylash</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="overlay fixed inset-0 bg-black/60 z-[200] items-center justify-center p-4" id="detailOverlay">
+  <div class="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-app max-h-[88vh] overflow-y-auto p-4" id="detailContent"></div>
+</div>
+
+<div class="toast fixed bottom-6 left-1/2 bg-[var(--accent)] text-[var(--accent-ink)] px-5 py-3 rounded-full font-bold text-sm z-[300]" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
