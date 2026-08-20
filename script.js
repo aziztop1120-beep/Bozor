@@ -14,7 +14,11 @@ const I18N = {
     toast_ok:"E'lon muvaffaqiyatli joylandi!", toast_fill:"Iltimos, sarlavha va narxni kiriting",
     just_now:"hozirgina", detail_desc:"Tavsif", detail_loc:"Manzil", detail_cat:"Kategoriya",
     lbl_phone:"Telefon raqami", ph_phone:"+998 90 123 45 67",
-    lbl_photo:"Rasm", no_photo:"Rasm yo'q", detail_phone:"Telefon"
+    lbl_photo:"Rasm", no_photo:"Rasm yo'q", detail_phone:"Telefon",
+    btn_delete:"E'lonni o'chirish", delete_title:"Bu e'lonni qayerda sotdingiz?",
+    delete_sub:"E'lonni o'chirishdan oldin bir savolga javob bering.",
+    sold_here:"Shu yerda (ilovada)", sold_elsewhere:"Boshqa joyda",
+    toast_deleted:"E'lon o'chirildi"
   },
   ru:{
     search_ph:"Что вы ищете?", search_btn:"Искать", sell_btn:"Продать",
@@ -30,7 +34,11 @@ const I18N = {
     toast_ok:"Объявление успешно опубликовано!", toast_fill:"Пожалуйста, укажите заголовок и цену",
     just_now:"только что", detail_desc:"Описание", detail_loc:"Адрес", detail_cat:"Категория",
     lbl_phone:"Номер телефона", ph_phone:"+998 90 123 45 67",
-    lbl_photo:"Фото", no_photo:"Нет фото", detail_phone:"Телефон"
+    lbl_photo:"Фото", no_photo:"Нет фото", detail_phone:"Телефон",
+    btn_delete:"Удалить объявление", delete_title:"Где вы продали этот товар?",
+    delete_sub:"Прежде чем удалить объявление, ответьте на один вопрос.",
+    sold_here:"Здесь (в приложении)", sold_elsewhere:"В другом месте",
+    toast_deleted:"Объявление удалено"
   },
   en:{
     search_ph:"What are you looking for?", search_btn:"Search", sell_btn:"Sell",
@@ -46,7 +54,11 @@ const I18N = {
     toast_ok:"Listing published successfully!", toast_fill:"Please enter a title and price",
     just_now:"just now", detail_desc:"Description", detail_loc:"Location", detail_cat:"Category",
     lbl_phone:"Phone number", ph_phone:"+998 90 123 45 67",
-    lbl_photo:"Photo", no_photo:"No photo", detail_phone:"Phone"
+    lbl_photo:"Photo", no_photo:"No photo", detail_phone:"Phone",
+    btn_delete:"Delete listing", delete_title:"Where did you sell this item?",
+    delete_sub:"Answer one question before the listing is deleted.",
+    sold_here:"Here (in the app)", sold_elsewhere:"Elsewhere",
+    toast_deleted:"Listing deleted"
   }
 };
 let lang = "uz";
@@ -79,7 +91,24 @@ const LOCATIONS = [
   {id:"urgench", name:{uz:"Urganch",ru:"Ургенч",en:"Urgench"}},
 ];
 
-let PRODUCTS = [
+const STORAGE_KEY = "bozor_products_v1";
+const NEXT_ID_KEY = "bozor_next_id_v1";
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(PRODUCTS));
+    localStorage.setItem(NEXT_ID_KEY, String(nextId));
+  }catch(e){ console.error("Saqlashda xatolik:", e); }
+}
+
+function loadStoredProducts(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ console.error("Yuklashda xatolik:", e); return null; }
+}
+
+let DEFAULT_PRODUCTS = [
   {id:1, photo:"./img/image copy.png", phone:"+998 90 123 45 67", price:8200000, cat:"phones", loc:{uz:"Toshkent, Yunusobod",ru:"Ташкент, Юнусабад",en:"Tashkent, Yunusabad"}, title:{uz:"iPhone 13 Pro 128GB, ideal holatda",ru:"iPhone 13 Pro 128GB, идеальное состояние",en:"iPhone 13 Pro 128GB, mint condition"}, desc:{uz:"Kafolat bor, quti va zaryadlovchi mavjud.",ru:"Есть гарантия, коробка и зарядка в наличии.",en:"Warranty included, comes with box and charger."}, time:"2 kun oldin"},
   {id:2, photo:"./img/image copy 2.png", phone:"+998 91 234 56 78", price:186000000, cat:"auto", loc:{uz:"Samarqand",ru:"Самарканд",en:"Samarkand"}, title:{uz:"Chevrolet Cobalt 2021-yil",ru:"Chevrolet Cobalt 2021 год",en:"Chevrolet Cobalt, year 2021"}, desc:{uz:"Birinchi qo'ldan, yugurgan 34 ming km.",ru:"Из первых рук, пробег 34 тыс. км.",en:"First owner, 34k km mileage."}, time:"5 soat oldin"},
   {id:3, photo:"./img/image copy 3.png", phone:"+998 93 345 67 89", price:1450000, cat:"home", loc:{uz:"Andijon",ru:"Андижан",en:"Andijan"}, title:{uz:"Yumshoq divan, 3 o'rinli",ru:"Мягкий диван, 3-местный",en:"Sofa, 3-seater"}, desc:{uz:"Deyarli yangi, rangi kulrang.",ru:"Почти новый, серого цвета.",en:"Almost new, grey color."}, time:"1 kun oldin"},
@@ -93,7 +122,13 @@ let PRODUCTS = [
   {id:11, photo:"./img/image copy 11.png", phone:"+998 97 123 45 67", price:95000, cat:"clothes", loc:{uz:"Xiva",ru:"Хива",en:"Khiva"}, title:{uz:"Ayollar uchun sport kostyum",ru:"Женский спортивный костюм",en:"Women's tracksuit"}, desc:{uz:"S va M o'lchamlarda mavjud.",ru:"Есть размеры S и M.",en:"Available in sizes S and M."}, time:"3 kun oldin"},
   {id:12, photo:"./img/image copy 12.png", phone:"+998 88 234 56 78", price:750000, cat:"sport", loc:{uz:"Toshkent, Chilonzor",ru:"Ташкент, Чиланзар",en:"Tashkent, Chilonzor"}, title:{uz:"Trenajor - ellips mashinasi",ru:"Тренажёр — эллиптический",en:"Elliptical trainer machine"}, desc:{uz:"Uy uchun, kam ishlatilgan.",ru:"Для дома, мало использовался.",en:"For home use, lightly used."}, time:"5 kun oldin"},
 ];
-let nextId = 13;
+
+// Sahifa yangilanganda e'lonlar yo'qolib ketmasligi uchun localStorage'dan o'qiymiz.
+// Agar oldin saqlangan holat bo'lmasa, standart namunaviy e'lonlardan boshlaymiz.
+const storedProducts = loadStoredProducts();
+let PRODUCTS = storedProducts || DEFAULT_PRODUCTS;
+let nextId = parseInt(localStorage.getItem(NEXT_ID_KEY), 10) || (Math.max(0, ...PRODUCTS.map(p=>p.id)) + 1);
+if(!storedProducts) saveState();
 
 /* ---------------- rendering ---------------- */
 function t(key){ return I18N[lang][key] || key; }
@@ -251,6 +286,7 @@ function submitListing(){
     time: t('just_now')
   };
   PRODUCTS.unshift(newProduct);
+  saveState();
   ["fTitle","fPrice","fPhone","fDesc"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("fPhoto").value = "";
   const preview = document.getElementById("photoPreview");
@@ -263,6 +299,26 @@ function submitListing(){
   renderGrid();
   document.getElementById("statLine").textContent = `🔥 ${PRODUCTS.length}+ ${t('stat')}`;
   showToast(t('toast_ok'));
+}
+
+/* ---------------- delete flow ---------------- */
+let pendingDeleteId = null;
+
+function openDeleteConfirm(id){
+  pendingDeleteId = id;
+  document.getElementById("deleteOverlay").classList.add("show");
+}
+
+function confirmDelete(where){
+  if(pendingDeleteId == null) return;
+  PRODUCTS = PRODUCTS.filter(p=>p.id !== pendingDeleteId);
+  saveState();
+  pendingDeleteId = null;
+  closeModal("deleteOverlay");
+  closeModal("detailOverlay");
+  renderGrid();
+  document.getElementById("statLine").textContent = `🔥 ${PRODUCTS.length}+ ${t('stat')}`;
+  showToast(t('toast_deleted'));
 }
 
 function openDetail(p){
@@ -283,12 +339,13 @@ function openDetail(p){
       ${p.phone
         ? `<a class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg py-3 font-extrabold text-sm flex items-center justify-center" href="tel:${p.phone.replace(/\s+/g,'')}">${t('contact')}</a>`
         : `<button class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg py-3 font-extrabold text-sm border-none" onclick="showToast(t('contact'))">${t('contact')}</button>`}
-    </div>`;
+    </div>
+    <button class="w-full mt-2 bg-transparent border border-[var(--danger)] text-[var(--danger)] rounded-lg py-2.5 font-bold text-sm" onclick="openDeleteConfirm(${p.id})">${t('btn_delete')}</button>`;
   document.getElementById("detailOverlay").classList.add("show");
 }
 
 document.getElementById("searchInput").addEventListener("input", renderGrid);
-[document.getElementById("addOverlay"), document.getElementById("detailOverlay")].forEach(ov=>{
+[document.getElementById("addOverlay"), document.getElementById("detailOverlay"), document.getElementById("deleteOverlay")].forEach(ov=>{
   ov.addEventListener("click", e=>{ if(e.target===ov) ov.classList.remove("show"); });
 });
 
