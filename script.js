@@ -7,7 +7,7 @@ const I18N = {
     listings_title:"E'lonlar", empty_title:"Hech narsa topilmadi",
     footer_text:"BOZOR — odamlar o'z mahsulotlarini sotadigan va sotib oladigan joy.",
     add_title:"Yangi e'lon joylash", lbl_title:"Sarlavha", lbl_price:"Narxi (so'm)",
-    lbl_category:"Kategoriya", lbl_location:"Manzil", lbl_desc:"Tavsif",
+    lbl_category:"Kategoriya", lbl_location:"Manzil", lbl_desc:"Tavsif", lbl_district:"Tuman",
     ph_title:"Masalan: iPhone 13 Pro, 128GB",
     ph_desc:"Mahsulot haqida qisqacha yozing...", btn_cancel:"Bekor qilish", btn_publish:"Joylash",
     contact:"Bog'lanish", all:"Barchasi", stat:"faol e'lon hozir platformada",
@@ -27,7 +27,7 @@ const I18N = {
     listings_title:"Объявления", empty_title:"Ничего не найдено",
     footer_text:"BOZOR — место, где люди продают и покупают товары.",
     add_title:"Новое объявление", lbl_title:"Заголовок", lbl_price:"Цена (сум)",
-    lbl_category:"Категория", lbl_location:"Адрес", lbl_desc:"Описание",
+    lbl_category:"Категория", lbl_location:"Адрес", lbl_desc:"Описание", lbl_district:"Район",
     ph_title:"Например: iPhone 13 Pro, 128GB",
     ph_desc:"Кратко опишите товар...", btn_cancel:"Отмена", btn_publish:"Опубликовать",
     contact:"Связаться", all:"Все", stat:"активных объявлений на платформе",
@@ -47,7 +47,7 @@ const I18N = {
     listings_title:"Listings", empty_title:"Nothing found",
     footer_text:"BOZOR — a place where people sell and buy their own goods.",
     add_title:"Post a new listing", lbl_title:"Title", lbl_price:"Price (UZS)",
-    lbl_category:"Category", lbl_location:"Location", lbl_desc:"Description",
+    lbl_category:"Category", lbl_location:"Location", lbl_desc:"Description", lbl_district:"District",
     ph_title:"e.g. iPhone 13 Pro, 128GB",
     ph_desc:"Briefly describe the item...", btn_cancel:"Cancel", btn_publish:"Publish",
     contact:"Contact", all:"All", stat:"active listings on the platform right now",
@@ -90,6 +90,25 @@ const LOCATIONS = [
   {id:"navoiy", name:{uz:"Navoiy",ru:"Навои",en:"Navoi"}},
   {id:"urgench", name:{uz:"Urganch",ru:"Ургенч",en:"Urgench"}},
 ];
+
+// Ba'zi shaharlar uchun tumanlar ro'yxati. Manzil tanlanganda, agar shu id
+// shu ro'yxatda bo'lsa, tuman tanlash maydoni ko'rsatiladi.
+const DISTRICTS = {
+  tashkent: [
+    {id:"bektemir", name:{uz:"Bektemir",ru:"Бектемир",en:"Bektemir"}},
+    {id:"chilonzor", name:{uz:"Chilonzor",ru:"Чиланзар",en:"Chilonzor"}},
+    {id:"mirzo-ulugbek", name:{uz:"Mirzo Ulug'bek",ru:"Мирзо Улугбек",en:"Mirzo Ulugbek"}},
+    {id:"mirobod", name:{uz:"Mirobod",ru:"Мирабад",en:"Mirobod"}},
+    {id:"olmazor", name:{uz:"Olmazor",ru:"Алмазар",en:"Olmazor"}},
+    {id:"sergeli", name:{uz:"Sergeli",ru:"Сергели",en:"Sergeli"}},
+    {id:"shayxontohur", name:{uz:"Shayxontohur",ru:"Шайхантахур",en:"Shaykhantakhur"}},
+    {id:"uchtepa", name:{uz:"Uchtepa",ru:"Учтепа",en:"Uchtepa"}},
+    {id:"yakkasaroy", name:{uz:"Yakkasaroy",ru:"Яккасарай",en:"Yakkasaray"}},
+    {id:"yangihayot", name:{uz:"Yangihayot",ru:"Янгихаёт",en:"Yangihayot"}},
+    {id:"yashnobod", name:{uz:"Yashnobod",ru:"Яшнабад",en:"Yashnabad"}},
+    {id:"yunusobod", name:{uz:"Yunusobod",ru:"Юнусабад",en:"Yunusabad"}},
+  ]
+};
 
 const STORAGE_KEY = "bozor_products_v1";
 const NEXT_ID_KEY = "bozor_next_id_v1";
@@ -181,7 +200,7 @@ function renderGrid(){
     card.onclick = ()=>openDetail(p);
     const catObj = CATEGORIES.find(c=>c.id===p.cat);
     card.innerHTML = `
-      <div class="h-24 bg-[var(--surface-2)] relative overflow-hidden flex items-center justify-center">
+      <div class="h-24 sm:h-32 lg:h-36 bg-[var(--surface-2)] relative overflow-hidden flex items-center justify-center">
         <span class="absolute top-1.5 left-1.5 bg-black/55 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">${catObj ? catObj.name[lang] : ''}</span>
         ${p.photo ? `<img src="${p.photo}" alt="" class="w-full h-full object-cover block">` : `<div class="w-full h-full flex items-center justify-center text-[var(--text-muted)] text-[11px] font-bold text-center px-2">${t('no_photo')}</div>`}
       </div>
@@ -218,6 +237,33 @@ function renderLocationSelect(){
     sel.appendChild(opt);
   });
   if(prev) sel.value = prev;
+  handleLocationChange();
+}
+
+function renderDistrictSelect(locId, prevDistrict){
+  const wrap = document.getElementById("districtWrap");
+  const sel = document.getElementById("fDistrict");
+  const list = DISTRICTS[locId];
+  if(!list){
+    wrap.classList.add("hidden");
+    sel.innerHTML = "";
+    return;
+  }
+  sel.innerHTML = "";
+  list.forEach(d=>{
+    const opt = document.createElement("option");
+    opt.value = d.id;
+    opt.textContent = d.name[lang];
+    sel.appendChild(opt);
+  });
+  if(prevDistrict && list.some(d=>d.id===prevDistrict)) sel.value = prevDistrict;
+  wrap.classList.remove("hidden");
+}
+
+function handleLocationChange(){
+  const locId = document.getElementById("fLocation").value;
+  const prevDistrict = document.getElementById("fDistrict").value;
+  renderDistrictSelect(locId, prevDistrict);
 }
 
 /* ---------------- language & theme ---------------- */
@@ -271,16 +317,22 @@ function submitListing(){
   const price = parseInt(document.getElementById("fPrice").value, 10);
   const cat = document.getElementById("fCategory").value;
   const locId = document.getElementById("fLocation").value;
+  const districtId = document.getElementById("fDistrict").value;
   const phone = document.getElementById("fPhone").value.trim();
   const desc = document.getElementById("fDesc").value.trim() || "—";
   if(!title || !price){ showToast(t('toast_fill')); return; }
   const locObj = LOCATIONS.find(l=>l.id===locId) || LOCATIONS[0];
+  const districtList = DISTRICTS[locObj.id];
+  const districtObj = districtList && districtId ? districtList.find(d=>d.id===districtId) : null;
+  const locName = districtObj
+    ? {uz:`${locObj.name.uz}, ${districtObj.name.uz}`, ru:`${locObj.name.ru}, ${districtObj.name.ru}`, en:`${locObj.name.en}, ${districtObj.name.en}`}
+    : locObj.name;
   const newProduct = {
     id: nextId++,
     photo: currentPhotoDataUrl,
     phone,
     price, cat,
-    loc: locObj.name,
+    loc: locName,
     title: {uz:title, ru:title, en:title},
     desc: {uz:desc, ru:desc, en:desc},
     time: t('just_now')
@@ -326,7 +378,7 @@ function openDetail(p){
   const content = document.getElementById("detailContent");
   content.innerHTML = `
     <button class="absolute top-3 right-3 bg-transparent border-none text-[var(--text-muted)] text-lg" onclick="closeModal('detailOverlay')">✕</button>
-    <div class="h-40 rounded-xl bg-[var(--surface-2)] flex items-center justify-center mb-3 overflow-hidden relative">
+    <div class="h-40 sm:h-56 rounded-xl bg-[var(--surface-2)] flex items-center justify-center mb-3 overflow-hidden relative">
       ${p.photo ? `<img src="${p.photo}" alt="" class="w-full h-full object-cover block">` : `<div class="w-full h-full flex items-center justify-center text-[var(--text-muted)] text-[13px] font-bold">${t('no_photo')}</div>`}
     </div>
     <div class="text-xl font-extrabold text-[var(--accent)] font-display mb-1.5">${fmtPrice(p.price)}</div>
