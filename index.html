@@ -74,33 +74,102 @@
 </head>
 <body class="pb-24 max-w-app mx-auto lg:max-w-6xl">
 
+<!-- AUTH GATE (shown until the user logs in or registers) -->
+<div id="authGate" class="fixed inset-0 z-[500] bg-[var(--bg)] flex items-center justify-center p-4 overflow-y-auto">
+  <div class="w-full max-w-md py-8">
+    <div class="flex items-center justify-center gap-2.5 mb-6">
+      <div class="w-11 h-11 rounded-xl bg-[var(--accent)] text-[var(--accent-ink)] flex items-center justify-center font-extrabold text-lg font-display">B</div>
+      <div class="text-2xl font-bold tracking-wide font-display">BOZOR</div>
+    </div>
+
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 sm:p-7">
+      <div class="flex bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-1 mb-6">
+        <button id="authTabLogin" onclick="switchAuthTab('login')" class="flex-1 rounded-lg py-2.5 font-extrabold text-sm cursor-pointer transition-all" data-i18n="login_btn">Kirish</button>
+        <button id="authTabRegister" onclick="switchAuthTab('register')" class="flex-1 rounded-lg py-2.5 font-extrabold text-sm cursor-pointer transition-all" data-i18n="login_register_link">Ro'yxatdan o'tish</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="loginForm">
+        <h1 data-i18n="login_title" class="text-xl font-bold mb-5 font-display text-center">Hisobga kirish</h1>
+
+        <div class="mb-4">
+          <label data-i18n="lbl_name" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Ism</label>
+          <input id="lName" type="text" data-i18n-ph="ph_name" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-4 py-3 text-base outline-none">
+        </div>
+
+        <div class="mb-4">
+          <label data-i18n="lbl_password" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Parol</label>
+          <input id="lPassword" type="password" data-i18n-ph="ph_password" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-4 py-3 text-base outline-none">
+        </div>
+
+        <label class="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-5 cursor-pointer select-none">
+          <input id="lRemember" type="checkbox" class="accent-[var(--accent)] w-4 h-4">
+          <span data-i18n="login_remember">Meni eslab qol</span>
+        </label>
+
+        <button class="w-full bg-[var(--accent)] text-[var(--accent-ink)] border-none rounded-lg py-3.5 font-extrabold text-base cursor-pointer hover:brightness-110 transition-all" onclick="submitLogin()" data-i18n="login_btn">Kirish</button>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="registerForm" class="hidden">
+        <h1 data-i18n="register_title" class="text-xl font-bold mb-5 font-display text-center">Ro'yxatdan o'tish</h1>
+
+        <div class="mb-4">
+          <label data-i18n="lbl_name" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Ism</label>
+          <input id="rName" type="text" data-i18n-ph="ph_name" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-4 py-3 text-base outline-none">
+        </div>
+
+        <div class="mb-4">
+          <label data-i18n="lbl_password" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Parol</label>
+          <input id="rPassword" type="password" data-i18n-ph="ph_password" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-4 py-3 text-base outline-none">
+        </div>
+
+        <div class="mb-5">
+          <label data-i18n="lbl_confirm_password" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Parolni tasdiqlang</label>
+          <input id="rConfirmPassword" type="password" data-i18n-ph="ph_confirm_password" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-4 py-3 text-base outline-none">
+        </div>
+
+        <button class="w-full bg-[var(--accent)] text-[var(--accent-ink)] border-none rounded-lg py-3.5 font-extrabold text-base cursor-pointer hover:brightness-110 transition-all" onclick="submitRegister()" data-i18n="register_btn">Ro'yxatdan o'tish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP (hidden until authenticated) -->
+<div id="appContent" class="hidden">
+
 <!-- NAVBAR -->
 <div class="fixed top-0 left-0 right-0 z-[100] bg-[var(--surface)] border-b border-[var(--border)]">
   <div class="max-w-app mx-auto lg:max-w-6xl px-3 md:px-6 pt-3 pb-2 flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
     <div class="flex items-center justify-between gap-2 md:justify-start md:flex-shrink-0">
       <div class="flex items-center gap-2 flex-shrink-0">
-        <div class="w-8 h-8 rounded-lg bg-[var(--accent)] text-[var(--accent-ink)] flex items-center justify-center font-extrabold text-sm font-display">B</div>
-        <div class="text-base font-bold tracking-wide font-display">BOZOR</div>
+        <div class=" cursor-pointer w-9 h-9 rounded-lg bg-[var(--accent)] text-[var(--accent-ink)] flex items-center justify-center font-extrabold text-base font-display">B</div>
+        <div class=" cursor-pointer text-lg font-bold tracking-wide font-display">BOZOR</div>
       </div>
       <div class="flex items-center gap-1.5 flex-shrink-0 md:order-3">
-        <select id="langSelect" onchange="setLang(this.value)" class="bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md px-1.5 py-1.5 text-xs font-semibold">
+        <select id="langSelect" onchange="setLang(this.value)" class="bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md px-2 py-2 text-sm font-semibold">
           <option value="uz">UZ</option>
           <option value="ru">RU</option>
           <option value="en">EN</option>
         </select>
-        <button id="themeBtn" onclick="toggleTheme()" title="Dark/Light mode" class="w-8 h-8 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center text-sm">🌙</button>
-        <button onclick="openAddModal()" class="bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg px-2.5 py-1.5 font-extrabold text-xs flex items-center gap-1 whitespace-nowrap">
+        <button id="themeBtn" onclick="toggleTheme()" title="Dark/Light mode" class="w-10 h-10 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center text-base cursor-pointer hover:border-[var(--accent)] transition-colors">🌙</button>
+        <button id="authBtn" class="bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3.5 py-2 font-extrabold text-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer hover:border-[var(--accent)] transition-colors">
+          <span>👤</span><span data-i18n="login_btn">Kirish</span>
+        </button>
+        <button onclick="openAddModal()" class="bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg px-3.5 py-2 font-extrabold text-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer hover:brightness-110 transition-all">
           <span>＋</span><span data-i18n="sell_btn">Sotish</span>
         </button>
       </div>
     </div>
     <div class="flex items-center bg-[var(--surface-2)] border border-[var(--border)] rounded-full pl-3 pr-1 md:flex-1 md:order-2">
-      <span class="text-sm">🔍</span>
-      <input id="searchInput" type="text" data-i18n-ph="search_ph" class="flex-1 bg-transparent border-none outline-none text-[var(--text)] px-2 py-2 text-sm">
-      <button onclick="renderGrid()" data-i18n="search_btn" class="bg-[var(--accent)] text-[var(--accent-ink)] rounded-full px-3 py-1.5 font-bold text-xs">Qidirish</button>
+      <span class="text-base">🔍</span>
+      <input id="searchInput" type="text" data-i18n-ph="search_ph" class="flex-1 bg-transparent border-none outline-none text-[var(--text)] px-2 py-2.5 text-base">
+      <button onclick="renderGrid()" data-i18n="search_btn" class="bg-[var(--accent)] text-[var(--accent-ink)] rounded-full px-4 py-2 font-bold text-sm">Qidirish</button>
     </div>
+  
   </div>
-  <div id="catRow" class="max-w-app mx-auto lg:max-w-6xl px-3 md:px-6 pb-2 flex gap-1.5 overflow-x-auto no-scrollbar"></div>
+  
+  <div id="catRow" class=" p-4 max-w-app mx-auto lg:max-w-6xl px-3 md:px-6 pb-3 flex gap-2 overflow-x-auto no-scrollbar"></div>
   <div class="ikat"></div>
 </div>
 <br>
@@ -109,80 +178,80 @@
 
 <!-- HERO -->
 <div class="max-w-app mx-auto lg:max-w-6xl px-3 md:px-6 pt-4 pb-3">
-  <h1 data-i18n="hero_title" class="font-display text-xl leading-tight mb-2 md:text-2xl lg:text-4xl lg:mb-3 lg:max-w-3xl">Kerakli narsani toping — yoki keraksizini soting</h1>
-  <p data-i18n="hero_sub" class="text-[var(--text-muted)] text-xs mb-1 md:text-sm lg:text-base">Toshkentdan Andijongacha — minglab e'lonlar bir joyda.</p>
-  <div id="statLine" class="text-[11px] text-[var(--accent-2)] font-bold mt-2 md:text-xs lg:text-sm"></div>
+  <h1 data-i18n="hero_title" class="font-display text-2xl leading-tight mb-2 md:text-3xl lg:text-5xl lg:mb-3 lg:max-w-3xl cursor-pointer ">Kerakli narsani toping — yoki keraksizini soting</h1>
+  <p data-i18n="hero_sub" class="text-[var(--text-muted)] text-sm mb-1 md:text-base lg:text-lg cursor-pointer ">Toshkentdan Andijongacha — minglab e'lonlar bir joyda.</p>
+  <div id="statLine" class="text-xs text-[var(--accent-2)] font-bold mt-2 md:text-sm lg:text-base"></div>
 </div>
 
 <!-- GRID -->
 <div class="max-w-app mx-auto lg:max-w-6xl px-3 md:px-6 pb-16">
   <div class="flex items-center justify-between my-3">
-    <h2 data-i18n="listings_title" class="text-base font-bold m-0 md:text-lg">E'lonlar</h2>
-    <span id="resultCount" class="text-xs text-[var(--text-muted)] font-semibold"></span>
+    <h2 data-i18n="listings_title" class="text-lg font-bold m-0 md:text-xl cursor-pointer ">E'lonlar</h2>
+    <span id="resultCount" class="text-sm text-[var(--text-muted)] font-semibold"></span>
   </div>
-  <div id="grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 md:gap-4"></div>
+  <div id="grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5"></div>
   <div id="emptyState" class="text-center py-12 px-4 text-[var(--text-muted)]" style="display:none;">
     <span class="text-3xl block mb-2">📭</span>
     <div data-i18n="empty_title">Hech narsa topilmadi</div>
   </div>
 </div>
 
-<footer class="border-t border-[var(--border)] py-5 px-3 text-center text-[var(--text-muted)] text-xs">
+<footer class="border-t border-[var(--border)] py-6 px-3 text-center text-[var(--text-muted)] text-sm cursor-pointer ">
   <div data-i18n="footer_text">BOZOR — odamlar o'z mahsulotlarini sotadigan va sotib oladigan joy.</div>
 </footer>
 
 <!-- ADD LISTING MODAL -->
 <div class="overlay fixed inset-0 bg-black/60 z-[200] items-center justify-center p-4" id="addOverlay">
   <div class="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-app sm:max-w-md max-h-[88vh] overflow-y-auto p-4 sm:p-5">
-    <button class="absolute top-3 right-3 bg-transparent border-none text-[var(--text-muted)] text-lg" onclick="closeModal('addOverlay')">✕</button>
-    <h3 data-i18n="add_title" class="text-base font-bold mb-3 font-display">Yangi e'lon joylash</h3>
+    <button class="absolute top-3 right-3 bg-transparent border-none text-[var(--text-muted)] text-xl cursor-pointer" onclick="closeModal('addOverlay')">✕</button>
+    <h3 data-i18n="add_title" class="text-lg font-bold mb-3 font-display">Yangi e'lon joylash</h3>
 
     <div class="mb-3">
-      <label data-i18n="lbl_title" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Sarlavha</label>
-      <input id="fTitle" type="text" data-i18n-ph="ph_title" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none">
+      <label data-i18n="lbl_title" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Sarlavha</label>
+      <input id="fTitle" type="text" data-i18n-ph="ph_title" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3.5 py-2.5 text-base outline-none">
     </div>
 
     <div class="flex gap-2 mb-3">
       <div class="flex-1">
-        <label data-i18n="lbl_price" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Narxi (so'm)</label>
-        <input id="fPrice" type="number" placeholder="0" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none">
+        <label data-i18n="lbl_price" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Narxi (so'm)</label>
+        <input id="fPrice" type="number" placeholder="0" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3.5 py-2.5 text-base outline-none">
       </div>
       <div class="flex-1">
-        <label data-i18n="lbl_category" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Kategoriya</label>
-        <select id="fCategory" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none"></select>
+        <label data-i18n="lbl_category" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Kategoriya</label>
+        <select id="fCategory" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3.5 py-2.5 text-base outline-none"></select>
       </div>
     </div>
 
     <div class="flex gap-2 mb-3">
       <div class="flex-1">
-        <label data-i18n="lbl_location" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Manzil</label>
-        <select id="fLocation" onchange="handleLocationChange()" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none"></select>
+        <label data-i18n="lbl_location" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Manzil</label>
+        <select id="fLocation" onchange="handleLocationChange()" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3.5 py-2.5 text-base outline-none"></select>
       </div>
       <div class="flex-1">
-        <label data-i18n="lbl_phone" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Telefon raqami</label>
-        <input id="fPhone" type="tel" data-i18n-ph="ph_phone" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none">
+        <label data-i18n="lbl_phone" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Telefon raqami</label>
+        <input id="fPhone" type="tel" data-i18n-ph="ph_phone" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3.5 py-2.5 text-base outline-none">
       </div>
     </div>
 
     <div class="mb-3 hidden" id="districtWrap">
-      <label data-i18n="lbl_district" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Tuman</label>
-      <select id="fDistrict" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none"></select>
+      <label data-i18n="lbl_district" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Tuman</label>
+      <select id="fDistrict" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3.5 py-2.5 text-base outline-none"></select>
     </div>
 
     <div class="mb-3">
-      <label data-i18n="lbl_photo" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Rasm</label>
+      <label data-i18n="lbl_photo" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Rasm</label>
       <input id="fPhoto" type="file" accept="image/*" onchange="previewPhoto(event)" class="w-full text-xs text-[var(--text)]">
       <img id="photoPreview" class="hidden mt-2 w-full h-32 object-cover rounded-lg border border-[var(--border)]">
     </div>
 
     <div class="mb-3">
-      <label data-i18n="lbl_desc" class="block text-[11px] font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Tavsif</label>
-      <textarea id="fDesc" data-i18n-ph="ph_desc" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3 py-2 text-sm outline-none resize-y min-h-[70px]"></textarea>
+      <label data-i18n="lbl_desc" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Tavsif</label>
+      <textarea id="fDesc" data-i18n-ph="ph_desc" class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg px-3.5 py-2.5 text-base outline-none resize-y min-h-[70px]"></textarea>
     </div>
 
     <div class="flex gap-2 mt-1.5">
-      <button class="flex-1 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg py-3 font-bold text-sm" onclick="closeModal('addOverlay')" data-i18n="btn_cancel">Bekor qilish</button>
-      <button class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] border-none rounded-lg py-3 font-extrabold text-sm" onclick="submitListing()" data-i18n="btn_publish">Joylash</button>
+      <button class="flex-1 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg py-3.5 font-bold text-base" onclick="closeModal('addOverlay')" data-i18n="btn_cancel">Bekor qilish</button>
+      <button class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] border-none rounded-lg py-3.5 font-extrabold text-base" onclick="submitListing()" data-i18n="btn_publish">Joylash</button>
     </div>
   </div>
 </div>
@@ -195,17 +264,19 @@
 <!-- DELETE CONFIRM MODAL -->
 <div class="overlay fixed inset-0 bg-black/70 z-[300] items-center justify-center p-4" id="deleteOverlay">
   <div class="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-app sm:max-w-sm p-4">
-    <h3 data-i18n="delete_title" class="text-base font-bold mb-1 font-display">Bu e'lonni qayerda sotdingiz?</h3>
-    <p data-i18n="delete_sub" class="text-xs text-[var(--text-muted)] mb-3">E'lonni o'chirishdan oldin bir savolga javob bering.</p>
+    <h3 data-i18n="delete_title" class="text-lg font-bold mb-1 font-display">Bu e'lonni qayerda sotdingiz?</h3>
+    <p data-i18n="delete_sub" class="text-sm text-[var(--text-muted)] mb-3">E'lonni o'chirishdan oldin bir savolga javob bering.</p>
     <div class="flex flex-col gap-2">
-      <button class="w-full bg-[var(--accent)] text-[var(--accent-ink)] border-none rounded-lg py-3 font-extrabold text-sm" onclick="confirmDelete('here')" data-i18n="sold_here">Shu yerda (ilovada)</button>
-      <button class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg py-3 font-bold text-sm" onclick="confirmDelete('elsewhere')" data-i18n="sold_elsewhere">Boshqa joyda</button>
-      <button class="w-full bg-transparent border-none text-[var(--text-muted)] rounded-lg py-2 font-semibold text-sm" onclick="closeModal('deleteOverlay')" data-i18n="btn_cancel">Bekor qilish</button>
+      <button class="w-full bg-[var(--accent)] text-[var(--accent-ink)] border-none rounded-lg py-3.5 font-extrabold text-base" onclick="confirmDelete('here')" data-i18n="sold_here">Shu yerda (ilovada)</button>
+      <button class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg py-3.5 font-bold text-base" onclick="confirmDelete('elsewhere')" data-i18n="sold_elsewhere">Boshqa joyda</button>
+      <button class="w-full bg-transparent border-none text-[var(--text-muted)] rounded-lg py-2.5 font-semibold text-base" onclick="closeModal('deleteOverlay')" data-i18n="btn_cancel">Bekor qilish</button>
     </div>
   </div>
 </div>
 
 <div class="toast fixed bottom-6 left-1/2 bg-[var(--accent)] text-[var(--accent-ink)] px-5 py-3 rounded-full font-bold text-sm z-[300]" id="toast"></div>
+
+</div><!-- /appContent -->
 
 <script src="script.js"></script>
 </body>

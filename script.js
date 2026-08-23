@@ -18,7 +18,17 @@ const I18N = {
     btn_delete:"E'lonni o'chirish", delete_title:"Bu e'lonni qayerda sotdingiz?",
     delete_sub:"E'lonni o'chirishdan oldin bir savolga javob bering.",
     sold_here:"Shu yerda (ilovada)", sold_elsewhere:"Boshqa joyda",
-    toast_deleted:"E'lon o'chirildi"
+    toast_deleted:"E'lon o'chirildi",
+    login_btn:"Kirish", login_title:"Hisobga kirish", lbl_name:"Ism",
+    ph_name:"Ismingizni kiriting", lbl_password:"Parol", ph_password:"Parolni kiriting",
+    login_remember:"Meni eslab qol", login_register_q:"Hisobingiz yo'qmi?",
+    login_register_link:"Ro'yxatdan o'tish", err_name:"Ismingizni kiritmadingiz!",
+    err_password:"Parolni kiritmadingiz!", toast_login_ok:"Xush kelibsiz,",
+    logout_btn:"Chiqish", toast_logout:"Tizimdan chiqdingiz",
+    register_title:"Ro'yxatdan o'tish", lbl_confirm_password:"Parolni tasdiqlang",
+    ph_confirm_password:"Parolni qayta kiriting", register_btn:"Ro'yxatdan o'tish",
+    login_have_account:"Hisobingiz bormi?", login_link:"Kirish",
+    err_confirm_password:"Parollar mos kelmadi", toast_register_ok:"Ro'yxatdan muvaffaqiyatli o'tdingiz!"
   },
   ru:{
     search_ph:"Что вы ищете?", search_btn:"Искать", sell_btn:"Продать",
@@ -38,7 +48,17 @@ const I18N = {
     btn_delete:"Удалить объявление", delete_title:"Где вы продали этот товар?",
     delete_sub:"Прежде чем удалить объявление, ответьте на один вопрос.",
     sold_here:"Здесь (в приложении)", sold_elsewhere:"В другом месте",
-    toast_deleted:"Объявление удалено"
+    toast_deleted:"Объявление удалено",
+    login_btn:"Войти", login_title:"Вход в аккаунт", lbl_name:"Имя",
+    ph_name:"Введите ваше имя", lbl_password:"Пароль", ph_password:"Введите пароль",
+    login_remember:"Запомнить меня", login_register_q:"Нет аккаунта?",
+    login_register_link:"Зарегистрироваться", err_name:"Вы не ввели имя!",
+    err_password:"Вы не ввели пароль!", toast_login_ok:"Добро пожаловать,",
+    logout_btn:"Выйти", toast_logout:"Вы вышли из системы",
+    register_title:"Регистрация", lbl_confirm_password:"Подтвердите пароль",
+    ph_confirm_password:"Введите пароль ещё раз", register_btn:"Зарегистрироваться",
+    login_have_account:"Уже есть аккаунт?", login_link:"Войти",
+    err_confirm_password:"Пароли не совпадают", toast_register_ok:"Вы успешно зарегистрировались!"
   },
   en:{
     search_ph:"What are you looking for?", search_btn:"Search", sell_btn:"Sell",
@@ -58,7 +78,17 @@ const I18N = {
     btn_delete:"Delete listing", delete_title:"Where did you sell this item?",
     delete_sub:"Answer one question before the listing is deleted.",
     sold_here:"Here (in the app)", sold_elsewhere:"Elsewhere",
-    toast_deleted:"Listing deleted"
+    toast_deleted:"Listing deleted",
+    login_btn:"Login", login_title:"Sign in", lbl_name:"Name",
+    ph_name:"Enter your name", lbl_password:"Password", ph_password:"Enter your password",
+    login_remember:"Remember me", login_register_q:"Don't have an account?",
+    login_register_link:"Register", err_name:"You didn't enter your name!",
+    err_password:"You didn't enter your password!", toast_login_ok:"Welcome,",
+    logout_btn:"Log out", toast_logout:"You've been logged out",
+    register_title:"Register", lbl_confirm_password:"Confirm password",
+    ph_confirm_password:"Re-enter your password", register_btn:"Register",
+    login_have_account:"Already have an account?", login_link:"Sign in",
+    err_confirm_password:"Passwords don't match", toast_register_ok:"Registered successfully!"
   }
 };
 let lang = "uz";
@@ -71,6 +101,8 @@ const CATEGORIES = [
   {id:"clothes", icon:"👕", name:{uz:"Kiyim-kechak",ru:"Одежда",en:"Clothing"}},
   {id:"auto", icon:"🚗", name:{uz:"Avtomobillar",ru:"Авто",en:"Auto"}},
   {id:"sport", icon:"⚽", name:{uz:"Sport",ru:"Спорт",en:"Sport"}},
+  {id:"tools", icon:"🛠️", name:{uz:"Asboblar",ru:"Инструменты",en:"Tools"}},
+  {id:"school", icon:"📚", name:{uz:"O'quv qurollari",ru:"Учебные принадлежности",en:"School supplies"}},
 ];
 let activeCat = "all";
 
@@ -112,6 +144,26 @@ const DISTRICTS = {
 
 const STORAGE_KEY = "bozor_products_v1";
 const NEXT_ID_KEY = "bozor_next_id_v1";
+const USERS_KEY = "bozor_users_v1";
+const SESSION_KEY = "bozor_session_v1";
+
+function loadUsers(){
+  try{
+    const raw = localStorage.getItem(USERS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ console.error("Foydalanuvchilarni yuklashda xatolik:", e); return []; }
+}
+function saveUsers(users){
+  try{ localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+  catch(e){ console.error("Foydalanuvchilarni saqlashda xatolik:", e); }
+}
+function loadSession(){
+  try{
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+let currentUser = loadSession();
 
 function saveState(){
   try{
@@ -140,6 +192,9 @@ let DEFAULT_PRODUCTS = [
   {id:10, photo:"./img/image copy 10.png", phone:"+998 94 012 34 56", price:412000000, cat:"auto", loc:{uz:"Toshkent, Yashnobod",ru:"Ташкент, Яшнабад",en:"Tashkent, Yashnabad"}, title:{uz:"Chevrolet Tracker 2023, gaz-benzin",ru:"Chevrolet Tracker 2023, газ-бензин",en:"Chevrolet Tracker 2023, gas-petrol"}, desc:{uz:"Faqat 8 ming km yurgan, kafolatda.",ru:"Пробег всего 8 тыс. км, на гарантии.",en:"Only 8k km, still under warranty."}, time:"12 soat oldin"},
   {id:11, photo:"./img/image copy 11.png", phone:"+998 97 123 45 67", price:95000, cat:"clothes", loc:{uz:"Xiva",ru:"Хива",en:"Khiva"}, title:{uz:"Ayollar uchun sport kostyum",ru:"Женский спортивный костюм",en:"Women's tracksuit"}, desc:{uz:"S va M o'lchamlarda mavjud.",ru:"Есть размеры S и M.",en:"Available in sizes S and M."}, time:"3 kun oldin"},
   {id:12, photo:"./img/image copy 12.png", phone:"+998 88 234 56 78", price:750000, cat:"sport", loc:{uz:"Toshkent, Chilonzor",ru:"Ташкент, Чиланзар",en:"Tashkent, Chilonzor"}, title:{uz:"Trenajor - ellips mashinasi",ru:"Тренажёр — эллиптический",en:"Elliptical trainer machine"}, desc:{uz:"Uy uchun, kam ishlatilgan.",ru:"Для дома, мало использовался.",en:"For home use, lightly used."}, time:"5 kun oldin"},
+  {id:13, photo:null, phone:"+998 90 345 67 12", price:620000, cat:"tools", loc:{uz:"Toshkent, Uchtepa",ru:"Ташкент, Учтепа",en:"Tashkent, Uchtepa"}, title:{uz:"Drel, zarbali, 750W",ru:"Дрель ударная, 750Вт",en:"Impact drill, 750W"}, desc:{uz:"Bir marta ishlatilgan, quti va bitlar bilan.",ru:"Использовалась один раз, в комплекте с битами.",en:"Used once, comes with bits and box."}, time:"7 soat oldin"},
+  {id:14, photo:null, phone:"+998 91 456 78 23", price:980000, cat:"tools", loc:{uz:"Andijon",ru:"Андижан",en:"Andijan"}, title:{uz:"Bolg'arka (ugol shlifmashina), 125mm",ru:"Болгарка (УШМ), 125мм",en:"Angle grinder, 125mm"}, desc:{uz:"Ishlab turibdi, zaxira disklar bilan birga.",ru:"В рабочем состоянии, с запасными дисками.",en:"Working condition, comes with spare discs."}, time:"1 kun oldin"},
+  {id:15, photo:null, phone:"+998 93 567 89 34", price:145000, cat:"school", loc:{uz:"Toshkent, Yunusobod",ru:"Ташкент, Юнусабад",en:"Tashkent, Yunusabad"}, title:{uz:"Maktab uchun qalam-daftar to'plami",ru:"Набор канцтоваров для школы",en:"School stationery set"}, desc:{uz:"Daftar, ruchka, qalam, chizg'ich va boshqalar.",ru:"Тетради, ручки, карандаши, линейка и др.",en:"Notebooks, pens, pencils, ruler and more."}, time:"2 kun oldin"},
 ];
 
 // Sahifa yangilanganda e'lonlar yo'qolib ketmasligi uchun localStorage'dan o'qiymiz.
@@ -162,7 +217,7 @@ function applyStaticI18n(){
   document.getElementById("statLine").textContent = `🔥 ${PRODUCTS.length}+ ${t('stat')}`;
 }
 
-const CHIP_BASE = "flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold whitespace-nowrap";
+const CHIP_BASE = "flex-shrink-0 flex items-center gap-2 px-5 py-3 rounded-full border text-sm font-semibold whitespace-nowrap cursor-pointer select-none transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:border-[var(--accent)]";
 const CHIP_INACTIVE = " bg-[var(--surface-2)] border-[var(--border)] text-[var(--text-muted)]";
 const CHIP_ACTIVE = " bg-[var(--accent)] border-[var(--accent)] text-[var(--accent-ink)]";
 
@@ -201,13 +256,13 @@ function renderGrid(){
     const catObj = CATEGORIES.find(c=>c.id===p.cat);
     card.innerHTML = `
       <div class="h-24 sm:h-32 lg:h-36 bg-[var(--surface-2)] relative overflow-hidden flex items-center justify-center">
-        <span class="absolute top-1.5 left-1.5 bg-black/55 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">${catObj ? catObj.name[lang] : ''}</span>
-        ${p.photo ? `<img src="${p.photo}" alt="" class="w-full h-full object-cover block">` : `<div class="w-full h-full flex items-center justify-center text-[var(--text-muted)] text-[11px] font-bold text-center px-2">${t('no_photo')}</div>`}
+        <span class="absolute top-1.5 left-1.5 bg-black/55 text-white text-[11px] font-bold px-2 py-1 rounded-full">${catObj ? catObj.name[lang] : ''}</span>
+        ${p.photo ? `<img src="${p.photo}" alt="" class="w-full h-full object-cover block">` : `<div class="w-full h-full flex items-center justify-center text-[var(--text-muted)] text-xs font-bold text-center px-2">${t('no_photo')}</div>`}
       </div>
-      <div class="p-2.5 flex flex-col gap-1 flex-1">
-        <div class="text-[14px] font-extrabold text-[var(--accent)] font-display">${fmtPrice(p.price)}</div>
-        <div class="text-[12px] font-semibold leading-snug line-clamp-2 min-h-[32px]">${p.title[lang]}</div>
-        <div class="text-[10px] text-[var(--text-muted)] flex justify-between mt-1 gap-1">
+      <div class="p-3 flex flex-col gap-1.5 flex-1">
+        <div class="text-base font-extrabold text-[var(--accent)] font-display">${fmtPrice(p.price)}</div>
+        <div class="text-sm font-semibold leading-snug line-clamp-2 min-h-[38px]">${p.title[lang]}</div>
+        <div class="text-xs text-[var(--text-muted)] flex justify-between mt-1 gap-1">
           <span class="truncate">${p.loc[lang]}</span><span class="flex-shrink-0">${p.time}</span>
         </div>
       </div>`;
@@ -275,6 +330,7 @@ function setLang(l){
   renderGrid();
   renderCategorySelect();
   renderLocationSelect();
+  renderAuthBtn();
 }
 
 function toggleTheme(){
@@ -282,6 +338,99 @@ function toggleTheme(){
   const isLight = html.getAttribute("data-theme") === "light";
   html.setAttribute("data-theme", isLight ? "dark" : "light");
   document.getElementById("themeBtn").textContent = isLight ? "🌙" : "☀️";
+}
+
+/* ---------------- auth (full-page gate) ---------------- */
+const TAB_ACTIVE = " bg-[var(--accent)] text-[var(--accent-ink)]";
+const TAB_INACTIVE = " bg-transparent text-[var(--text-muted)]";
+
+function renderAuthBtn(){
+  const btn = document.getElementById("authBtn");
+  if(!btn) return;
+  if(currentUser){
+    btn.innerHTML = `<span>👤</span><span class="max-w-[90px] truncate">${currentUser.name}</span>`;
+    btn.onclick = logoutUser;
+    btn.title = t('logout_btn');
+  }else{
+    btn.innerHTML = `<span>👤</span><span data-i18n="login_btn">${t('login_btn')}</span>`;
+    btn.onclick = ()=>showAuthGate();
+    btn.title = t('login_btn');
+  }
+}
+
+function showAuthGate(){
+  document.getElementById("authGate").classList.remove("hidden");
+  document.getElementById("appContent").classList.add("hidden");
+  switchAuthTab("login");
+}
+
+function enterApp(){
+  document.getElementById("authGate").classList.add("hidden");
+  document.getElementById("appContent").classList.remove("hidden");
+}
+
+function switchAuthTab(tab){
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+  const tabLogin = document.getElementById("authTabLogin");
+  const tabRegister = document.getElementById("authTabRegister");
+  if(tab === "register"){
+    registerForm.classList.remove("hidden");
+    loginForm.classList.add("hidden");
+    tabRegister.className = "flex-1 rounded-lg py-2.5 font-extrabold text-sm cursor-pointer transition-all" + TAB_ACTIVE;
+    tabLogin.className = "flex-1 rounded-lg py-2.5 font-extrabold text-sm cursor-pointer transition-all" + TAB_INACTIVE;
+  }else{
+    loginForm.classList.remove("hidden");
+    registerForm.classList.add("hidden");
+    tabLogin.className = "flex-1 rounded-lg py-2.5 font-extrabold text-sm cursor-pointer transition-all" + TAB_ACTIVE;
+    tabRegister.className = "flex-1 rounded-lg py-2.5 font-extrabold text-sm cursor-pointer transition-all" + TAB_INACTIVE;
+  }
+}
+
+function submitLogin(){
+  const name = document.getElementById("lName").value.trim();
+  const password = document.getElementById("lPassword").value;
+  const remember = document.getElementById("lRemember").checked;
+  if(!name){ showToast(t('err_name')); return; }
+  if(!password){ showToast(t('err_password')); return; }
+  const users = loadUsers();
+  const found = users.find(u=>u.name.toLowerCase()===name.toLowerCase() && u.password===password);
+  const user = found || {name, password};
+  if(!found){ users.push(user); saveUsers(users); }
+  currentUser = {name: user.name};
+  if(remember){
+    try{ localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser)); }catch(e){}
+  }
+  renderAuthBtn();
+  enterApp();
+  showToast(`${t('toast_login_ok')} ${user.name}!`);
+}
+
+function submitRegister(){
+  const name = document.getElementById("rName").value.trim();
+  const password = document.getElementById("rPassword").value;
+  const confirmPassword = document.getElementById("rConfirmPassword").value;
+  if(!name){ showToast(t('err_name')); return; }
+  if(!password){ showToast(t('err_password')); return; }
+  if(password !== confirmPassword){ showToast(t('err_confirm_password')); return; }
+  const users = loadUsers();
+  const existingIdx = users.findIndex(u=>u.name.toLowerCase()===name.toLowerCase());
+  if(existingIdx !== -1) users.splice(existingIdx, 1);
+  users.push({name, password});
+  saveUsers(users);
+  currentUser = {name};
+  try{ localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser)); }catch(e){}
+  renderAuthBtn();
+  enterApp();
+  showToast(t('toast_register_ok'));
+}
+
+function logoutUser(){
+  currentUser = null;
+  try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+  renderAuthBtn();
+  showAuthGate();
+  showToast(t('toast_logout'));
 }
 
 /* ---------------- modals ---------------- */
@@ -377,22 +526,22 @@ function openDetail(p){
   const catObj = CATEGORIES.find(c=>c.id===p.cat);
   const content = document.getElementById("detailContent");
   content.innerHTML = `
-    <button class="absolute top-3 right-3 bg-transparent border-none text-[var(--text-muted)] text-lg" onclick="closeModal('detailOverlay')">✕</button>
+    <button class="absolute top-3 right-3 bg-transparent border-none text-[var(--text-muted)] text-xl cursor-pointer" onclick="closeModal('detailOverlay')">✕</button>
     <div class="h-40 sm:h-56 rounded-xl bg-[var(--surface-2)] flex items-center justify-center mb-3 overflow-hidden relative">
-      ${p.photo ? `<img src="${p.photo}" alt="" class="w-full h-full object-cover block">` : `<div class="w-full h-full flex items-center justify-center text-[var(--text-muted)] text-[13px] font-bold">${t('no_photo')}</div>`}
+      ${p.photo ? `<img src="${p.photo}" alt="" class="w-full h-full object-cover block">` : `<div class="w-full h-full flex items-center justify-center text-[var(--text-muted)] text-sm font-bold">${t('no_photo')}</div>`}
     </div>
-    <div class="text-xl font-extrabold text-[var(--accent)] font-display mb-1.5">${fmtPrice(p.price)}</div>
-    <h3 class="m-0 mb-2 text-base font-bold">${p.title[lang]}</h3>
-    <div class="text-sm text-[var(--text-muted)] leading-relaxed my-2.5">${p.desc[lang]}</div>
-    <div class="flex justify-between text-xs text-[var(--text-muted)] py-2 border-t border-[var(--border)]"><span>${t('detail_cat')}</span><span>${catObj ? catObj.name[lang] : ''}</span></div>
-    <div class="flex justify-between text-xs text-[var(--text-muted)] py-2 border-t border-[var(--border)]"><span>${t('detail_loc')}</span><span>${p.loc[lang]}</span></div>
-    ${p.phone ? `<div class="flex justify-between text-xs text-[var(--text-muted)] py-2 border-t border-[var(--border)]"><span>${t('detail_phone')}</span><span>${p.phone}</span></div>` : ''}
-    <div class="flex gap-2 mt-3.5">
+    <div class="text-2xl font-extrabold text-[var(--accent)] font-display mb-1.5">${fmtPrice(p.price)}</div>
+    <h3 class="m-0 mb-2 text-lg font-bold">${p.title[lang]}</h3>
+    <div class="text-base text-[var(--text-muted)] leading-relaxed my-2.5">${p.desc[lang]}</div>
+    <div class="flex justify-between text-sm text-[var(--text-muted)] py-2.5 border-t border-[var(--border)]"><span>${t('detail_cat')}</span><span>${catObj ? catObj.name[lang] : ''}</span></div>
+    <div class="flex justify-between text-sm text-[var(--text-muted)] py-2.5 border-t border-[var(--border)]"><span>${t('detail_loc')}</span><span>${p.loc[lang]}</span></div>
+    ${p.phone ? `<div class="flex justify-between text-sm text-[var(--text-muted)] py-2.5 border-t border-[var(--border)]"><span>${t('detail_phone')}</span><span>${p.phone}</span></div>` : ''}
+    <div class="flex gap-2 mt-4">
       ${p.phone
-        ? `<a class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg py-3 font-extrabold text-sm flex items-center justify-center" href="tel:${p.phone.replace(/\s+/g,'')}">${t('contact')}</a>`
-        : `<button class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg py-3 font-extrabold text-sm border-none" onclick="showToast(t('contact'))">${t('contact')}</button>`}
+        ? `<a class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg py-3.5 font-extrabold text-base flex items-center justify-center cursor-pointer" href="tel:${p.phone.replace(/\s+/g,'')}">${t('contact')}</a>`
+        : `<button class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg py-3.5 font-extrabold text-base border-none cursor-pointer" onclick="showToast(t('contact'))">${t('contact')}</button>`}
     </div>
-    <button class="w-full mt-2 bg-transparent border border-[var(--danger)] text-[var(--danger)] rounded-lg py-2.5 font-bold text-sm" onclick="openDeleteConfirm(${p.id})">${t('btn_delete')}</button>`;
+    <button class="w-full mt-2 bg-transparent border border-[var(--danger)] text-[var(--danger)] rounded-lg py-3 font-bold text-base cursor-pointer" onclick="openDeleteConfirm(${p.id})">${t('btn_delete')}</button>`;
   document.getElementById("detailOverlay").classList.add("show");
 }
 
@@ -403,3 +552,8 @@ document.getElementById("searchInput").addEventListener("input", renderGrid);
 
 /* ---------------- init ---------------- */
 setLang("uz");
+if(currentUser){
+  enterApp();
+}else{
+  showAuthGate();
+}
