@@ -28,7 +28,12 @@ const I18N = {
     register_title:"Ro'yxatdan o'tish", lbl_confirm_password:"Parolni tasdiqlang",
     ph_confirm_password:"Parolni qayta kiriting", register_btn:"Ro'yxatdan o'tish",
     login_have_account:"Hisobingiz bormi?", login_link:"Kirish",
-    err_confirm_password:"Parollar mos kelmadi", toast_register_ok:"Ro'yxatdan muvaffaqiyatli o'tdingiz!"
+    err_confirm_password:"Parollar mos kelmadi", toast_register_ok:"Ro'yxatdan muvaffaqiyatli o'tdingiz!",
+    nav_search:"Qidiruv", nav_favorites:"Sevimli", nav_sell:"Sotish",
+    nav_messages:"Xabarlar", nav_profile:"Profil", nav_soon:"Tez orada!",
+    nav_pick_listing:"Avval bir e'lonni oching",
+    favorites_title:"Sevimli e'lonlar", empty_favorites:"Sevimlilar bo'sh",
+    toast_fav_added:"Sevimlilarga qo'shildi", toast_fav_removed:"Sevimlilardan o'chirildi"
   },
   ru:{
     search_ph:"Что вы ищете?", search_btn:"Искать", sell_btn:"Продать",
@@ -58,7 +63,12 @@ const I18N = {
     register_title:"Регистрация", lbl_confirm_password:"Подтвердите пароль",
     ph_confirm_password:"Введите пароль ещё раз", register_btn:"Зарегистрироваться",
     login_have_account:"Уже есть аккаунт?", login_link:"Войти",
-    err_confirm_password:"Пароли не совпадают", toast_register_ok:"Вы успешно зарегистрировались!"
+    err_confirm_password:"Пароли не совпадают", toast_register_ok:"Вы успешно зарегистрировались!",
+    nav_search:"Поиск", nav_favorites:"Избранное", nav_sell:"Продать",
+    nav_messages:"Сообщения", nav_profile:"Профиль", nav_soon:"Скоро!",
+    nav_pick_listing:"Сначала откройте объявление",
+    favorites_title:"Избранные объявления", empty_favorites:"Избранное пусто",
+    toast_fav_added:"Добавлено в избранное", toast_fav_removed:"Удалено из избранного"
   },
   en:{
     search_ph:"What are you looking for?", search_btn:"Search", sell_btn:"Sell",
@@ -88,7 +98,12 @@ const I18N = {
     register_title:"Register", lbl_confirm_password:"Confirm password",
     ph_confirm_password:"Re-enter your password", register_btn:"Register",
     login_have_account:"Already have an account?", login_link:"Sign in",
-    err_confirm_password:"Passwords don't match", toast_register_ok:"Registered successfully!"
+    err_confirm_password:"Passwords don't match", toast_register_ok:"Registered successfully!",
+    nav_search:"Search", nav_favorites:"Favorites", nav_sell:"Sell",
+    nav_messages:"Messages", nav_profile:"Profile", nav_soon:"Coming soon!",
+    nav_pick_listing:"Open a listing first",
+    favorites_title:"Favorite listings", empty_favorites:"No favorites yet",
+    toast_fav_added:"Added to favorites", toast_fav_removed:"Removed from favorites"
   }
 };
 let lang = "uz";
@@ -146,6 +161,7 @@ const STORAGE_KEY = "bozor_products_v1";
 const NEXT_ID_KEY = "bozor_next_id_v1";
 const USERS_KEY = "bozor_users_v1";
 const SESSION_KEY = "bozor_session_v1";
+const FAVORITES_KEY = "bozor_favorites_v1";
 
 function loadUsers(){
   try{
@@ -164,6 +180,36 @@ function loadSession(){
   }catch(e){ return null; }
 }
 let currentUser = loadSession();
+
+/* ---------------- favorites ---------------- */
+function loadFavorites(){
+  try{
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ return []; }
+}
+function saveFavorites(){
+  try{ localStorage.setItem(FAVORITES_KEY, JSON.stringify(FAVORITES)); }
+  catch(e){ console.error("Sevimlilarni saqlashda xatolik:", e); }
+}
+let FAVORITES = loadFavorites();
+let showOnlyFavorites = false;
+
+function isFavorite(id){ return FAVORITES.includes(id); }
+
+function toggleFavorite(id, ev){
+  if(ev){ ev.stopPropagation(); }
+  const idx = FAVORITES.indexOf(id);
+  if(idx === -1){
+    FAVORITES.push(id);
+    showToast(t("toast_fav_added"));
+  }else{
+    FAVORITES.splice(idx, 1);
+    showToast(t("toast_fav_removed"));
+  }
+  saveFavorites();
+  renderGrid();
+}
 
 function saveState(){
   try{
@@ -192,9 +238,10 @@ let DEFAULT_PRODUCTS = [
   {id:10, photo:"./img/image copy 10.png", phone:"+998 94 012 34 56", price:412000000, cat:"auto", loc:{uz:"Toshkent, Yashnobod",ru:"Ташкент, Яшнабад",en:"Tashkent, Yashnabad"}, title:{uz:"Chevrolet Tracker 2023, gaz-benzin",ru:"Chevrolet Tracker 2023, газ-бензин",en:"Chevrolet Tracker 2023, gas-petrol"}, desc:{uz:"Faqat 8 ming km yurgan, kafolatda.",ru:"Пробег всего 8 тыс. км, на гарантии.",en:"Only 8k km, still under warranty."}, time:"12 soat oldin"},
   {id:11, photo:"./img/image copy 11.png", phone:"+998 97 123 45 67", price:95000, cat:"clothes", loc:{uz:"Xiva",ru:"Хива",en:"Khiva"}, title:{uz:"Ayollar uchun sport kostyum",ru:"Женский спортивный костюм",en:"Women's tracksuit"}, desc:{uz:"S va M o'lchamlarda mavjud.",ru:"Есть размеры S и M.",en:"Available in sizes S and M."}, time:"3 kun oldin"},
   {id:12, photo:"./img/image copy 12.png", phone:"+998 88 234 56 78", price:750000, cat:"sport", loc:{uz:"Toshkent, Chilonzor",ru:"Ташкент, Чиланзар",en:"Tashkent, Chilonzor"}, title:{uz:"Trenajor - ellips mashinasi",ru:"Тренажёр — эллиптический",en:"Elliptical trainer machine"}, desc:{uz:"Uy uchun, kam ishlatilgan.",ru:"Для дома, мало использовался.",en:"For home use, lightly used."}, time:"5 kun oldin"},
-  {id:13, photo:null, phone:"+998 90 345 67 12", price:620000, cat:"tools", loc:{uz:"Toshkent, Uchtepa",ru:"Ташкент, Учтепа",en:"Tashkent, Uchtepa"}, title:{uz:"Drel, zarbali, 750W",ru:"Дрель ударная, 750Вт",en:"Impact drill, 750W"}, desc:{uz:"Bir marta ishlatilgan, quti va bitlar bilan.",ru:"Использовалась один раз, в комплекте с битами.",en:"Used once, comes with bits and box."}, time:"7 soat oldin"},
-  {id:14, photo:null, phone:"+998 91 456 78 23", price:980000, cat:"tools", loc:{uz:"Andijon",ru:"Андижан",en:"Andijan"}, title:{uz:"Bolg'arka (ugol shlifmashina), 125mm",ru:"Болгарка (УШМ), 125мм",en:"Angle grinder, 125mm"}, desc:{uz:"Ishlab turibdi, zaxira disklar bilan birga.",ru:"В рабочем состоянии, с запасными дисками.",en:"Working condition, comes with spare discs."}, time:"1 kun oldin"},
-  {id:15, photo:null, phone:"+998 93 567 89 34", price:145000, cat:"school", loc:{uz:"Toshkent, Yunusobod",ru:"Ташкент, Юнусабад",en:"Tashkent, Yunusabad"}, title:{uz:"Maktab uchun qalam-daftar to'plami",ru:"Набор канцтоваров для школы",en:"School stationery set"}, desc:{uz:"Daftar, ruchka, qalam, chizg'ich va boshqalar.",ru:"Тетради, ручки, карандаши, линейка и др.",en:"Notebooks, pens, pencils, ruler and more."}, time:"2 kun oldin"},
+  {id:13,  photo:"./img/image copy 13.png", phone:"+998 90 345 67 12", price:620000, cat:"tools", loc:{uz:"Toshkent, Uchtepa",ru:"Ташкент, Учтепа",en:"Tashkent, Uchtepa"}, title:{uz:"Drel, zarbali, 750W",ru:"Дрель ударная, 750Вт",en:"Impact drill, 750W"}, desc:{uz:"Bir marta ishlatilgan, quti va bitlar bilan.",ru:"Использовалась один раз, в комплекте с битами.",en:"Used once, comes with bits and box."}, time:"7 soat oldin"},
+  {id:14,  photo:"./img/image copy 14.png", phone:"+998 91 456 78 23", price:980000, cat:"tools", loc:{uz:"Andijon",ru:"Андижан",en:"Andijan"}, title:{uz:"Bolg'arka (ugol shlifmashina), 125mm",ru:"Болгарка (УШМ), 125мм",en:"Angle grinder, 125mm"}, desc:{uz:"Ishlab turibdi, zaxira disklar bilan birga.",ru:"В рабочем состоянии, с запасными дисками.",en:"Working condition, comes with spare discs."}, time:"1 kun oldin"},
+  {id:15,  photo:"./img/image copy 15.png", phone:"+998 93 567 89 34", price:145000, cat:"school", loc:{uz:"Toshkent, Yunusobod",ru:"Ташкент, Юнусабад",en:"Tashkent, Yunusabad"}, title:{uz:"Maktab uchun qalam-daftar to'plami",ru:"Набор канцтоваров для школы",en:"School stationery set"}, desc:{uz:"Daftar, ruchka, qalam, chizg'ich va boshqalar.",ru:"Тетради, ручки, карандаши, линейка и др.",en:"Notebooks, pens, pencils, ruler and more."}, time:"2 kun oldin"},
+  
 ];
 
 // Sahifa yangilanganda e'lonlar yo'qolib ketmasligi uchun localStorage'dan o'qiymiz.
@@ -244,19 +291,29 @@ function renderGrid(){
   let list = PRODUCTS.filter(p=>{
     const matchesCat = activeCat==="all" || p.cat===activeCat;
     const matchesQ = !q || p.title[lang].toLowerCase().includes(q) || p.title.uz.toLowerCase().includes(q);
-    return matchesCat && matchesQ;
+    const matchesFav = !showOnlyFavorites || isFavorite(p.id);
+    return matchesCat && matchesQ && matchesFav;
   });
+
+  const titleEl = document.getElementById("listingsTitle");
+  if(titleEl) titleEl.textContent = showOnlyFavorites ? t("favorites_title") : t("listings_title");
   document.getElementById("resultCount").textContent = list.length;
   document.getElementById("emptyState").style.display = list.length ? "none" : "block";
+  const emptyTextEl = document.querySelector("#emptyState [data-i18n='empty_title']");
+  if(emptyTextEl) emptyTextEl.textContent = showOnlyFavorites ? t("empty_favorites") : t("empty_title");
 
   list.forEach(p=>{
     const card = document.createElement("div");
     card.className = "card bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden flex flex-col cursor-pointer";
     card.onclick = ()=>openDetail(p);
     const catObj = CATEGORIES.find(c=>c.id===p.cat);
+    const fav = isFavorite(p.id);
     card.innerHTML = `
       <div class="h-24 sm:h-32 lg:h-36 bg-[var(--surface-2)] relative overflow-hidden flex items-center justify-center">
         <span class="absolute top-1.5 left-1.5 bg-black/55 text-white text-[11px] font-bold px-2 py-1 rounded-full">${catObj ? catObj.name[lang] : ''}</span>
+        <button type="button" class="fav-btn absolute top-1.5 right-1.5 z-10 w-7 h-7 rounded-full bg-black/45 flex items-center justify-center cursor-pointer border-none${fav ? ' fav-active' : ''}" data-fav-id="${p.id}" onclick="toggleFavorite(${p.id}, event)">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="${fav ? 'var(--nav-pink, #E4157F)' : 'none'}" stroke="${fav ? 'var(--nav-pink, #E4157F)' : '#fff'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </button>
         ${p.photo ? `<img src="${p.photo}" alt="" class="w-full h-full object-cover block">` : `<div class="w-full h-full flex items-center justify-center text-[var(--text-muted)] text-xs font-bold text-center px-2">${t('no_photo')}</div>`}
       </div>
       <div class="p-3 flex flex-col gap-1.5 flex-1">
@@ -504,6 +561,7 @@ function submitListing(){
 
 /* ---------------- delete flow ---------------- */
 let pendingDeleteId = null;
+let lastOpenedProduct = null;
 
 function openDeleteConfirm(id){
   pendingDeleteId = id;
@@ -523,14 +581,19 @@ function confirmDelete(where){
 }
 
 function openDetail(p){
+  lastOpenedProduct = p;
   const catObj = CATEGORIES.find(c=>c.id===p.cat);
   const content = document.getElementById("detailContent");
+  const fav = isFavorite(p.id);
   content.innerHTML = `
-    <button class="absolute top-3 right-3 bg-transparent border-none text-[var(--text-muted)] text-xl cursor-pointer" onclick="closeModal('detailOverlay')">✕</button>
-    <div class="h-40 sm:h-56 rounded-xl bg-[var(--surface-2)] flex items-center justify-center mb-3 overflow-hidden relative">
+    <button class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white text-lg flex items-center justify-center border-none cursor-pointer" onclick="closeModal('detailOverlay')">✕</button>
+    <div class="h-40 sm:h-56 rounded-xl bg-[var(--surface-2)] flex items-center justify-center mb-3 overflow-hidden relative z-0">
+      <button type="button" class="absolute top-2 left-2 z-10 w-8 h-8 rounded-full bg-black/45 flex items-center justify-center cursor-pointer border-none${fav ? ' fav-active' : ''}" id="detailFavBtn" onclick="toggleFavorite(${p.id}, event); const b=document.getElementById('detailFavBtn'); const nowFav=isFavorite(${p.id}); b.classList.toggle('fav-active', nowFav); b.querySelector('svg').setAttribute('fill', nowFav ? 'var(--nav-pink, #E4157F)' : 'none'); b.querySelector('svg').setAttribute('stroke', nowFav ? 'var(--nav-pink, #E4157F)' : '#fff');">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="${fav ? 'var(--nav-pink, #E4157F)' : 'none'}" stroke="${fav ? 'var(--nav-pink, #E4157F)' : '#fff'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      </button>
       ${p.photo ? `<img src="${p.photo}" alt="" class="w-full h-full object-cover block">` : `<div class="w-full h-full flex items-center justify-center text-[var(--text-muted)] text-sm font-bold">${t('no_photo')}</div>`}
     </div>
-    <div class="text-2xl font-extrabold text-[var(--accent)] font-display mb-1.5">${fmtPrice(p.price)}</div>
+    <div class="text-2xl font-extrabold text-[#00f2fe] font-display mb-1.5">${fmtPrice(p.price)}</div>
     <h3 class="m-0 mb-2 text-lg font-bold">${p.title[lang]}</h3>
     <div class="text-base text-[var(--text-muted)] leading-relaxed my-2.5">${p.desc[lang]}</div>
     <div class="flex justify-between text-sm text-[var(--text-muted)] py-2.5 border-t border-[var(--border)]"><span>${t('detail_cat')}</span><span>${catObj ? catObj.name[lang] : ''}</span></div>
@@ -538,17 +601,58 @@ function openDetail(p){
     ${p.phone ? `<div class="flex justify-between text-sm text-[var(--text-muted)] py-2.5 border-t border-[var(--border)]"><span>${t('detail_phone')}</span><span>${p.phone}</span></div>` : ''}
     <div class="flex gap-2 mt-4">
       ${p.phone
-        ? `<a class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg py-3.5 font-extrabold text-base flex items-center justify-center cursor-pointer" href="tel:${p.phone.replace(/\s+/g,'')}">${t('contact')}</a>`
-        : `<button class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] rounded-lg py-3.5 font-extrabold text-base border-none cursor-pointer" onclick="showToast(t('contact'))">${t('contact')}</button>`}
+        ? `<a class="flex-1 bg-[#00f2fe] text-black rounded-lg py-3.5 font-extrabold text-base flex items-center justify-center cursor-pointer" href="tel:${p.phone.replace(/\s+/g,'')}">${t('contact')}</a>`
+        : `<button class="flex-1 bg-[#00f2fe] text-black rounded-lg py-3.5 font-extrabold text-base border-none cursor-pointer" onclick="showToast(t('contact'))">${t('contact')}</button>`}
     </div>
     <button class="w-full mt-2 bg-transparent border border-[var(--danger)] text-[var(--danger)] rounded-lg py-3 font-bold text-base cursor-pointer" onclick="openDeleteConfirm(${p.id})">${t('btn_delete')}</button>`;
   document.getElementById("detailOverlay").classList.add("show");
 }
 
 document.getElementById("searchInput").addEventListener("input", renderGrid);
+
 [document.getElementById("addOverlay"), document.getElementById("detailOverlay"), document.getElementById("deleteOverlay")].forEach(ov=>{
   ov.addEventListener("click", e=>{ if(e.target===ov) ov.classList.remove("show"); });
 });
+
+/* ---------------- bottom mobile nav ---------------- */
+function bottomNavGo(section){
+  document.querySelectorAll("#bottomNav .bn-item[data-nav]").forEach(b=> {
+    b.classList.remove("bn-active");
+    b.style.color = ""; // CSS-dagi eski standart rangiga qaytadi
+  });
+  
+  const btn = document.querySelector(`#bottomNav [data-nav="${section}"]`);
+  if(btn) {
+    btn.classList.add("bn-active");
+    // Faqat aktiv tugma rangini Aqua qiladi
+    btn.style.color = "#00f2fe"; 
+  }
+
+  if(section === "search"){
+    showOnlyFavorites = false;
+    renderGrid();
+    window.scrollTo({top:0, behavior:"smooth"});
+    const input = document.getElementById("searchInput");
+    if(input) setTimeout(()=>input.focus(), 300);
+  }else if(section === "favorites"){
+    showOnlyFavorites = true;
+    renderGrid();
+    document.getElementById("grid").scrollIntoView({behavior:"smooth", block:"start"});
+  }else if(section === "sell"){
+    if(currentUser){ openAddModal(); } else { showAuthGate(); }
+  }else if(section === "messages"){
+    if(lastOpenedProduct && lastOpenedProduct.phone){
+      const digits = lastOpenedProduct.phone.replace(/\D/g,"");
+      window.open(`https://wa.me/${digits}`, "_blank");
+    }else{
+      showToast(t("nav_pick_listing"));
+    }
+  }else if(section === "profile"){
+    if(currentUser){ document.getElementById("authBtn").click(); } else { showAuthGate(); }
+  }else{
+    showToast(t("nav_soon"));
+  }
+}
 
 /* ---------------- init ---------------- */
 setLang("uz");
@@ -557,3 +661,5 @@ if(currentUser){
 }else{
   showAuthGate();
 }
+// Qidiruvni boshlang'ichda yoqib qo'yish
+setTimeout(() => { bottomNavGo("search"); }, 50);
