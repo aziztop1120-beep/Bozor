@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="icon" type="image/png" href="./img/image.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -131,6 +133,92 @@
   }
   #bottomNav .bn-sell .bn-fab svg{ width:22px; height:22px; stroke:var(--nav-fab-ink); stroke-width:2.2; }
   #bottomNav .bn-sell span{ margin-top:1px; }
+
+  /* ---------------- profile page ---------------- */
+  #profilePage{
+    position:fixed; inset:0; z-index:140;
+    background:var(--bg);
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:110px;
+  }
+  #profilePage.hidden{ display:none; }
+  .pp-hero{
+    position:relative;
+    overflow:hidden;
+    padding:22px 18px 26px;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+  }
+  .pp-hero::after{
+    content:"";
+    position:absolute;
+    top:-70px; right:-70px;
+    width:220px; height:220px;
+    border-radius:50%;
+    background:var(--accent);
+    opacity:.9;
+  }
+  .pp-hero-inner{ position:relative; z-index:1; }
+  .pp-close-btn{
+    position:absolute; top:14px; right:14px; z-index:2;
+    width:32px; height:32px; border-radius:50%;
+    background:rgba(0,0,0,.28);
+    color:#fff; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; line-height:1;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .pp-close-btn:active{ background:rgba(0,0,0,.45); }
+  .pp-avatar-wrap{ position:relative; width:64px; height:64px; cursor:pointer; }
+  .pp-avatar-wrap #ppAvatar{ width:100%; height:100%; overflow:hidden; }
+  .pp-avatar-wrap #ppAvatar img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .pp-avatar-cam{
+    position:absolute; bottom:-2px; right:-2px;
+    width:22px; height:22px; border-radius:50%;
+    background:var(--accent); color:var(--accent-ink);
+    display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--surface);
+    pointer-events:none;
+  }
+  .pp-avatar-cam svg{ width:12px; height:12px; }
+
+  /* ---------------- map layer toggle (add-listing location picker) ---------------- */
+  #mapLayerToggle button{
+    background:var(--surface-2);
+    border-color:var(--border);
+    color:var(--text-muted);
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #mapLayerToggle button.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--accent-ink);
+  }
+  .pp-row{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+    padding:15px 18px;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .pp-row:active{ background:var(--surface-2); }
+  .pp-section-title{
+    font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.02em;
+    color:var(--text-muted);
+    padding:18px 18px 6px;
+  }
+  .pp-badge{
+    background:var(--accent); color:var(--accent-ink);
+    font-size:12px; font-weight:800;
+    min-width:20px; height:20px; padding:0 6px;
+    border-radius:999px;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
 </style>
 </head>
 <body class="pb-24 max-w-app mx-auto lg:max-w-6xl">
@@ -300,6 +388,15 @@
     </div>
 
     <div class="mb-3">
+      <button type="button" onclick="openMapPicker()" class="w-full flex items-center justify-center gap-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg py-3 font-bold text-sm">
+        <span>📍</span><span data-i18n="btn_pick_map">Xaritadan aniq joyni belgilash</span>
+      </button>
+      <div id="geoPickedLabel" class="hidden mt-1.5 text-xs font-semibold text-[var(--accent)]" data-i18n="geo_marked">✅ Joylashuv xaritada belgilandi</div>
+      <input type="hidden" id="fGeoLat">
+      <input type="hidden" id="fGeoLng">
+    </div>
+
+    <div class="mb-3">
       <label data-i18n="lbl_photo" class="block text-xs font-bold text-[var(--text-muted)] mb-1.5 uppercase tracking-wide">Rasm</label>
       <input id="fPhoto" type="file" accept="image/*" onchange="previewPhoto(event)" class="w-full text-xs text-[var(--text)]">
       <img id="photoPreview" class="hidden mt-2 w-full h-32 object-cover rounded-lg border border-[var(--border)]">
@@ -322,6 +419,26 @@
   <div class="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-app sm:max-w-md max-h-[88vh] overflow-y-auto p-4 sm:p-5" id="detailContent"></div>
 </div>
 
+<!-- MAP PICKER MODAL (used when posting a listing) -->
+<div class="overlay fixed inset-0 bg-black/60 z-[250] items-center justify-center p-4" id="mapPickOverlay">
+  <div class="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-app sm:max-w-lg max-h-[88vh] overflow-y-auto p-4 sm:p-5">
+    <button class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white text-lg flex items-center justify-center border-none cursor-pointer" onclick="closeModal('mapPickOverlay')">✕</button>
+    <h3 data-i18n="map_pick_title" class="text-lg font-bold mb-3 font-display">Xaritadan joyni belgilang</h3>
+    <div class="flex gap-2 mb-2" id="mapLayerToggle">
+      <button type="button" class="flex-1 rounded-lg py-2 text-xs font-extrabold uppercase tracking-wide border" id="mapLayerBtnStreet" onclick="setMapPickLayer('street')" data-i18n="map_layer_street">Xarita</button>
+      <button type="button" class="flex-1 rounded-lg py-2 text-xs font-extrabold uppercase tracking-wide border" id="mapLayerBtnSat" onclick="setMapPickLayer('satellite')" data-i18n="map_layer_satellite">Sun'iy yo'ldosh</button>
+    </div>
+    <div id="mapPickMap" class="w-full h-64 sm:h-80 rounded-xl overflow-hidden border border-[var(--border)]"></div>
+    <p data-i18n="map_pick_hint" class="text-xs text-[var(--text-muted)] mt-2">Xaritaga bosing yoki markerni suring — tanlangan joy saqlanadi.</p>
+    <div class="flex gap-2 mt-3">
+      <button type="button" class="flex-1 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg py-3 font-bold text-sm" onclick="useMyLocationForPin()">
+        <span data-i18n="btn_use_my_location">📍 Joriy joylashuvim</span>
+      </button>
+      <button type="button" class="flex-1 bg-[var(--accent)] text-[var(--accent-ink)] border-none rounded-lg py-3 font-extrabold text-sm" onclick="confirmMapPick()" data-i18n="btn_save_location">Saqlash</button>
+    </div>
+  </div>
+</div>
+
 <!-- DELETE CONFIRM MODAL -->
 <div class="overlay fixed inset-0 bg-black/70 z-[300] items-center justify-center p-4" id="deleteOverlay">
   <div class="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-app sm:max-w-sm p-4">
@@ -332,6 +449,85 @@
       <button class="w-full bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg py-3.5 font-bold text-base" onclick="confirmDelete('elsewhere')" data-i18n="sold_elsewhere">Boshqa joyda</button>
       <button class="w-full bg-transparent border-none text-[var(--text-muted)] rounded-lg py-2.5 font-semibold text-base" onclick="closeModal('deleteOverlay')" data-i18n="btn_cancel">Bekor qilish</button>
     </div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE (shown from bottom-nav "Profil"; only "Chiqish" at the bottom logs out) -->
+<div id="profilePage" class="hidden">
+  <div class="pp-hero">
+    <button type="button" class="pp-close-btn" onclick="closeProfilePageX()" aria-label="Yopish">✕</button>
+    <div class="pp-hero-inner">
+      <div class="flex items-start gap-3 mb-4 pr-10">
+        <div class="pp-avatar-wrap" onclick="document.getElementById('ppPhotoInput').click()">
+          <div class="w-16 h-16 rounded-full bg-[var(--surface-2)] border-2 border-[var(--border)] flex items-center justify-center font-extrabold text-2xl font-display" id="ppAvatar">?</div>
+          <div class="pp-avatar-cam">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          </div>
+        </div>
+        <input type="file" id="ppPhotoInput" accept="image/*" class="hidden" onchange="onProfilePhotoSelected(event)">
+        <button type="button" onclick="editProfileName()" data-i18n="profile_edit_row" class="text-xs font-extrabold uppercase tracking-wide bg-black/25 rounded-full px-3 py-2">Profilni tahrirlash</button>
+      </div>
+      <h1 class="text-2xl font-bold font-display" id="ppGreeting">Salom!</h1>
+      <p class="text-xs text-[var(--text-muted)] mt-1" id="ppId">ID: —</p>
+      <div class="mt-4 text-sm">
+        <p><span data-i18n="profile_wallet_label">Sizning hamyoningizda:</span> <b>0,00 <span data-i18n="currency_sum">so'm</span></b></p>
+        <p class="mt-1"><span data-i18n="profile_bonus_label">Bonuslar:</span> <b><span data-i18n="profile_bonus_value">0,00 bonus</span></b></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 flex flex-col gap-2.5">
+    <button type="button" onclick="closeProfilePage(); openAddModal();" data-i18n="profile_post_listing_btn"
+      class="w-full text-left bg-[var(--accent-2)] text-[#2b1a02] rounded-xl px-4 py-4 font-extrabold text-base">
+      E'lon joylashtirish
+    </button>
+    <button type="button" onclick="showToast(t('nav_soon'))" data-i18n="profile_buy_bundle_btn"
+      class="w-full text-left bg-[var(--accent)] text-[var(--accent-ink)] rounded-xl px-4 py-4 font-extrabold text-base">
+      To'plam sotib olish
+    </button>
+  </div>
+
+  <div class="pp-section-title" data-i18n="profile_your_listings_title">Sizning e'lonlaringiz</div>
+  <div class="pp-row" onclick="goToMyListings()">
+    <span data-i18n="profile_all_listings_row">Barcha e'lonlaringiz</span>
+    <span class="flex items-center gap-2 text-[var(--text-muted)]"><span class="pp-badge" id="ppMineCount">0</span>›</span>
+  </div>
+
+  <div class="pp-section-title" data-i18n="profile_chat_title">Chat</div>
+  <div class="pp-row" onclick="bottomNavGo('messages')">
+    <span data-i18n="profile_active_chats">Aktiv suhbatlar</span><span class="text-[var(--text-muted)]">›</span>
+  </div>
+  <div class="pp-row" onclick="showToast(t('nav_soon'))">
+    <span data-i18n="profile_inbox">Quti</span><span class="text-[var(--text-muted)]">›</span>
+  </div>
+
+  <div class="pp-section-title" data-i18n="profile_payments_title">To'lovlar</div>
+  <div class="pp-row" onclick="showToast(t('nav_soon'))">
+    <span data-i18n="profile_wallet_row">Sizning hamyoningiz</span><span class="text-[var(--text-muted)]">›</span>
+  </div>
+  <div class="pp-row" onclick="showToast(t('nav_soon'))">
+    <span data-i18n="profile_payment_history_row">To'lovlar tarixi</span><span class="text-[var(--text-muted)]">›</span>
+  </div>
+
+  <div class="pp-section-title" data-i18n="profile_settings_title">Sozlamalar va boshqalar</div>
+  <div class="pp-row" onclick="showToast(t('nav_soon'))">
+    <span data-i18n="profile_settings_row">Sozlamalar</span><span class="text-[var(--text-muted)]">›</span>
+  </div>
+  <div class="pp-row" onclick="showToast(t('nav_soon'))">
+    <span data-i18n="profile_help_row">Yordam</span><span class="text-[var(--text-muted)]">›</span>
+  </div>
+  <div class="pp-row" onclick="showToast(t('nav_soon'))">
+    <span data-i18n="profile_terms_row">Shartlar va qoidalar</span><span class="text-[var(--text-muted)]">›</span>
+  </div>
+  <div class="pp-row" onclick="showToast(t('nav_soon'))">
+    <span data-i18n="profile_agreement_row">Foydalanuvchi bilan kelishuvi</span><span class="text-[var(--text-muted)]">›</span>
+  </div>
+  <div class="pp-row" onclick="showToast('BOZOR — v1.0')">
+    <span data-i18n="profile_about_row">Ilova haqida</span><span class="text-[var(--text-muted)]">›</span>
+  </div>
+
+  <div class="py-8 text-center">
+    <button type="button" onclick="confirmLogout()" data-i18n="logout_btn" class="text-[var(--danger)] font-extrabold text-base underline underline-offset-4 cursor-pointer bg-transparent border-none">Chiqish</button>
   </div>
 </div>
 

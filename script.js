@@ -33,7 +33,27 @@ const I18N = {
     nav_messages:"Xabarlar", nav_profile:"Profil", nav_soon:"Tez orada!",
     nav_pick_listing:"Avval bir e'lonni oching",
     favorites_title:"Sevimli e'lonlar", empty_favorites:"Sevimlilar bo'sh",
-    toast_fav_added:"Sevimlilarga qo'shildi", toast_fav_removed:"Sevimlilardan o'chirildi"
+    toast_fav_added:"Sevimlilarga qo'shildi", toast_fav_removed:"Sevimlilardan o'chirildi",
+    btn_pick_map:"Xaritadan aniq joyni belgilash", geo_marked:"✅ Joylashuv xaritada belgilandi",
+    map_pick_title:"Xaritadan joyni belgilang", map_pick_hint:"Xaritaga bosing yoki markerni suring — tanlangan joy saqlanadi.",
+    map_layer_street:"Xarita", map_layer_satellite:"Sun'iy yo'ldosh",
+    btn_use_my_location:"📍 Joriy joylashuvim", btn_save_location:"Saqlash",
+    detail_geo:"Aniq joylashuv", btn_directions:"🧭 Yo'nalish olish",
+    toast_geo_denied:"Joylashuvni aniqlab bo'lmadi", toast_geo_unsupported:"Qurilma geolokatsiyani qo'llab-quvvatlamaydi",
+    profile_subtitle:"Hisobingiz", logout_confirm_q:"Hisobdan chiqishni xohlaysizmi?",
+
+    profile_greeting:(name)=>`Salom, ${name}!`,
+    profile_wallet_label:"Sizning hamyoningizda:", currency_sum:"so'm",
+    profile_bonus_label:"Bonuslar:", profile_bonus_value:"0,00 bonus",
+    profile_edit_row:"Profilni tahrirlash",
+    profile_post_listing_btn:"E'lon joylashtirish", profile_buy_bundle_btn:"To'plam sotib olish",
+    profile_your_listings_title:"Sizning e'lonlaringiz", profile_all_listings_row:"Barcha e'lonlaringiz",
+    profile_chat_title:"Chat", profile_active_chats:"Aktiv suhbatlar", profile_inbox:"Quti",
+    profile_payments_title:"To'lovlar", profile_wallet_row:"Sizning hamyoningiz", profile_payment_history_row:"To'lovlar tarixi",
+    profile_settings_title:"Sozlamalar va boshqalar", profile_settings_row:"Sozlamalar", profile_help_row:"Yordam",
+    profile_terms_row:"Shartlar va qoidalar", profile_agreement_row:"Foydalanuvchi bilan kelishuvi", profile_about_row:"Ilova haqida",
+    my_listings_title:"Mening e'lonlarim", empty_mine:"Sizda hali e'lonlar yo'q",
+    prompt_new_name:"Yangi ismingizni kiriting:",
   },
   ru:{
     search_ph:"Что вы ищете?", search_btn:"Искать", sell_btn:"Продать",
@@ -68,7 +88,27 @@ const I18N = {
     nav_messages:"Сообщения", nav_profile:"Профиль", nav_soon:"Скоро!",
     nav_pick_listing:"Сначала откройте объявление",
     favorites_title:"Избранные объявления", empty_favorites:"Избранное пусто",
-    toast_fav_added:"Добавлено в избранное", toast_fav_removed:"Удалено из избранного"
+    toast_fav_added:"Добавлено в избранное", toast_fav_removed:"Удалено из избранного",
+    btn_pick_map:"Отметить точное место на карте", geo_marked:"✅ Местоположение отмечено на карте",
+    map_pick_title:"Отметьте место на карте", map_pick_hint:"Нажмите на карту или перетащите маркер — точка сохранится.",
+    map_layer_street:"Карта", map_layer_satellite:"Спутник",
+    btn_use_my_location:"📍 Моё текущее местоположение", btn_save_location:"Сохранить",
+    detail_geo:"Точное местоположение", btn_directions:"🧭 Построить маршрут",
+    toast_geo_denied:"Не удалось определить местоположение", toast_geo_unsupported:"Устройство не поддерживает геолокацию",
+    profile_subtitle:"Ваш аккаунт", logout_confirm_q:"Выйти из аккаунта?",
+
+    profile_greeting:(name)=>`Привет, ${name}!`,
+    profile_wallet_label:"На вашем кошельке:", currency_sum:"сум",
+    profile_bonus_label:"Бонусы:", profile_bonus_value:"0,00 бонусов",
+    profile_edit_row:"Редактировать профиль",
+    profile_post_listing_btn:"Разместить объявление", profile_buy_bundle_btn:"Купить пакет",
+    profile_your_listings_title:"Ваши объявления", profile_all_listings_row:"Все ваши объявления",
+    profile_chat_title:"Чат", profile_active_chats:"Активные чаты", profile_inbox:"Входящие",
+    profile_payments_title:"Платежи", profile_wallet_row:"Ваш кошелёк", profile_payment_history_row:"История платежей",
+    profile_settings_title:"Настройки и другое", profile_settings_row:"Настройки", profile_help_row:"Помощь",
+    profile_terms_row:"Условия использования", profile_agreement_row:"Пользовательское соглашение", profile_about_row:"О приложении",
+    my_listings_title:"Мои объявления", empty_mine:"У вас пока нет объявлений",
+    prompt_new_name:"Введите новое имя:",
   },
   en:{
     search_ph:"What are you looking for?", search_btn:"Search", sell_btn:"Sell",
@@ -103,7 +143,27 @@ const I18N = {
     nav_messages:"Messages", nav_profile:"Profile", nav_soon:"Coming soon!",
     nav_pick_listing:"Open a listing first",
     favorites_title:"Favorite listings", empty_favorites:"No favorites yet",
-    toast_fav_added:"Added to favorites", toast_fav_removed:"Removed from favorites"
+    toast_fav_added:"Added to favorites", toast_fav_removed:"Removed from favorites",
+    btn_pick_map:"Mark exact location on map", geo_marked:"✅ Location marked on the map",
+    map_pick_title:"Mark the location on the map", map_pick_hint:"Tap the map or drag the marker — the spot will be saved.",
+    map_layer_street:"Map", map_layer_satellite:"Satellite",
+    btn_use_my_location:"📍 My current location", btn_save_location:"Save",
+    detail_geo:"Exact location", btn_directions:"🧭 Get directions",
+    toast_geo_denied:"Couldn't determine location", toast_geo_unsupported:"This device doesn't support geolocation",
+    profile_subtitle:"Your account", logout_confirm_q:"Log out of your account?",
+
+    profile_greeting:(name)=>`Hi, ${name}!`,
+    profile_wallet_label:"Your wallet balance:", currency_sum:"UZS",
+    profile_bonus_label:"Bonuses:", profile_bonus_value:"0.00 bonus",
+    profile_edit_row:"Edit profile",
+    profile_post_listing_btn:"Post a listing", profile_buy_bundle_btn:"Buy a bundle",
+    profile_your_listings_title:"Your listings", profile_all_listings_row:"All your listings",
+    profile_chat_title:"Chat", profile_active_chats:"Active chats", profile_inbox:"Inbox",
+    profile_payments_title:"Payments", profile_wallet_row:"Your wallet", profile_payment_history_row:"Payment history",
+    profile_settings_title:"Settings & more", profile_settings_row:"Settings", profile_help_row:"Help",
+    profile_terms_row:"Terms & conditions", profile_agreement_row:"User agreement", profile_about_row:"About the app",
+    my_listings_title:"My listings", empty_mine:"You don't have any listings yet",
+    prompt_new_name:"Enter your new name:",
   }
 };
 let lang = "uz";
@@ -181,6 +241,11 @@ function loadSession(){
 }
 let currentUser = loadSession();
 
+/* Foydalanuvchi uchun barqaror ID yaratish (masalan 9 xonali raqam) */
+function generateUserId(){
+  return String(Math.floor(100000000 + Math.random()*900000000));
+}
+
 /* ---------------- favorites ---------------- */
 function loadFavorites(){
   try{
@@ -194,6 +259,7 @@ function saveFavorites(){
 }
 let FAVORITES = loadFavorites();
 let showOnlyFavorites = false;
+let showOnlyMine = false;
 
 function isFavorite(id){ return FAVORITES.includes(id); }
 
@@ -256,7 +322,8 @@ function t(key){ return I18N[lang][key] || key; }
 
 function applyStaticI18n(){
   document.querySelectorAll("[data-i18n]").forEach(el=>{
-    el.textContent = t(el.getAttribute("data-i18n"));
+    const val = t(el.getAttribute("data-i18n"));
+    if(typeof val === "string") el.textContent = val;
   });
   document.querySelectorAll("[data-i18n-ph]").forEach(el=>{
     el.placeholder = t(el.getAttribute("data-i18n-ph"));
@@ -292,15 +359,16 @@ function renderGrid(){
     const matchesCat = activeCat==="all" || p.cat===activeCat;
     const matchesQ = !q || p.title[lang].toLowerCase().includes(q) || p.title.uz.toLowerCase().includes(q);
     const matchesFav = !showOnlyFavorites || isFavorite(p.id);
-    return matchesCat && matchesQ && matchesFav;
+    const matchesMine = !showOnlyMine || (currentUser && p.ownerName === currentUser.name);
+    return matchesCat && matchesQ && matchesFav && matchesMine;
   });
 
   const titleEl = document.getElementById("listingsTitle");
-  if(titleEl) titleEl.textContent = showOnlyFavorites ? t("favorites_title") : t("listings_title");
+  if(titleEl) titleEl.textContent = showOnlyMine ? t("my_listings_title") : (showOnlyFavorites ? t("favorites_title") : t("listings_title"));
   document.getElementById("resultCount").textContent = list.length;
   document.getElementById("emptyState").style.display = list.length ? "none" : "block";
   const emptyTextEl = document.querySelector("#emptyState [data-i18n='empty_title']");
-  if(emptyTextEl) emptyTextEl.textContent = showOnlyFavorites ? t("empty_favorites") : t("empty_title");
+  if(emptyTextEl) emptyTextEl.textContent = showOnlyMine ? t("empty_mine") : (showOnlyFavorites ? t("empty_favorites") : t("empty_title"));
 
   list.forEach(p=>{
     const card = document.createElement("div");
@@ -388,6 +456,9 @@ function setLang(l){
   renderCategorySelect();
   renderLocationSelect();
   renderAuthBtn();
+  if(currentUser && !document.getElementById("profilePage").classList.contains("hidden")){
+    renderProfilePage();
+  }
 }
 
 function toggleTheme(){
@@ -406,8 +477,8 @@ function renderAuthBtn(){
   if(!btn) return;
   if(currentUser){
     btn.innerHTML = `<span>👤</span><span class="max-w-[90px] truncate">${currentUser.name}</span>`;
-    btn.onclick = logoutUser;
-    btn.title = t('logout_btn');
+    btn.onclick = ()=>bottomNavGo('profile');
+    btn.title = t('nav_profile');
   }else{
     btn.innerHTML = `<span>👤</span><span data-i18n="login_btn">${t('login_btn')}</span>`;
     btn.onclick = ()=>showAuthGate();
@@ -452,9 +523,17 @@ function submitLogin(){
   if(!password){ showToast(t('err_password')); return; }
   const users = loadUsers();
   const found = users.find(u=>u.name.toLowerCase()===name.toLowerCase() && u.password===password);
-  const user = found || {name, password};
-  if(!found){ users.push(user); saveUsers(users); }
-  currentUser = {name: user.name};
+  let user = found;
+  if(!user){
+    user = {name, password, id: generateUserId()};
+    users.push(user);
+    saveUsers(users);
+  }else if(!user.id){
+    // Eski foydalanuvchilarga ID biriktirilmagan bo'lsa, hozir biriktiramiz.
+    user.id = generateUserId();
+    saveUsers(users);
+  }
+  currentUser = {name: user.name, id: user.id, avatar: user.avatar || null};
   if(remember){
     try{ localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser)); }catch(e){}
   }
@@ -472,10 +551,11 @@ function submitRegister(){
   if(password !== confirmPassword){ showToast(t('err_confirm_password')); return; }
   const users = loadUsers();
   const existingIdx = users.findIndex(u=>u.name.toLowerCase()===name.toLowerCase());
+  const id = (existingIdx !== -1 && users[existingIdx].id) ? users[existingIdx].id : generateUserId();
   if(existingIdx !== -1) users.splice(existingIdx, 1);
-  users.push({name, password});
+  users.push({name, password, id});
   saveUsers(users);
-  currentUser = {name};
+  currentUser = {name, id};
   try{ localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser)); }catch(e){}
   renderAuthBtn();
   enterApp();
@@ -486,8 +566,109 @@ function logoutUser(){
   currentUser = null;
   try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
   renderAuthBtn();
+  closeProfilePage();
   showAuthGate();
   showToast(t('toast_logout'));
+}
+
+/* Faqat profil sahifasidagi "Chiqish" tugmasi shu funksiyani chaqiradi —
+   shunda foydalanuvchi tasodifan emas, faqat o'zi bosganda tizimdan chiqadi. */
+function confirmLogout(){
+  if(!currentUser) return;
+  if(window.confirm(t('logout_confirm_q'))){
+    logoutUser();
+  }
+}
+
+/* ---------------- profile page (full page, like a real marketplace app) ---------------- */
+function renderProfilePage(){
+  if(!currentUser) return;
+  const initial = (currentUser.name || "?").trim().charAt(0).toUpperCase() || "?";
+  const avatar = document.getElementById("ppAvatar");
+  const greeting = document.getElementById("ppGreeting");
+  const idEl = document.getElementById("ppId");
+  const mineCountEl = document.getElementById("ppMineCount");
+  if(avatar){
+    if(currentUser.avatar){
+      avatar.innerHTML = `<img src="${currentUser.avatar}" alt="avatar">`;
+    }else{
+      avatar.innerHTML = "";
+      avatar.textContent = initial;
+    }
+  }
+  if(greeting) greeting.textContent = t("profile_greeting")(currentUser.name);
+  if(idEl) idEl.textContent = `ID: ${currentUser.id || "—"}`;
+  if(mineCountEl){
+    const mineCount = PRODUCTS.filter(p=>p.ownerName === currentUser.name).length;
+    mineCountEl.textContent = mineCount;
+  }
+}
+
+function openProfilePage(){
+  if(!currentUser) return;
+  renderProfilePage();
+  document.getElementById("profilePage").classList.remove("hidden");
+  window.scrollTo({top:0});
+}
+
+function closeProfilePage(){
+  const page = document.getElementById("profilePage");
+  if(page) page.classList.add("hidden");
+}
+
+/* Profil sahifasidagi ✕ tugmasi: sahifani yopadi va pastki navdagi
+   "Profil" belgisini ham nofaol holatga qaytaradi. */
+function closeProfilePageX(){
+  closeProfilePage();
+  const btn = document.querySelector('#bottomNav [data-nav="profile"]');
+  if(btn){ btn.classList.remove("bn-active"); btn.style.color = ""; }
+}
+
+/* Foydalanuvchi profil rasmini tanlaganda ishga tushadi: rasmni
+   dataURL sifatida o'qiydi, ekranda darhol ko'rsatadi va
+   joriy foydalanuvchi (hamda uning saqlangan hisobi)ga saqlaydi. */
+function onProfilePhotoSelected(e){
+  if(!currentUser) return;
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const dataUrl = reader.result;
+    currentUser.avatar = dataUrl;
+    try{ localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser)); }catch(err){}
+    const users = loadUsers();
+    const idx = users.findIndex(u=>u.id === currentUser.id || u.name.toLowerCase()===currentUser.name.toLowerCase());
+    if(idx !== -1){ users[idx].avatar = dataUrl; saveUsers(users); }
+    renderProfilePage();
+    renderAuthBtn();
+  };
+  reader.readAsDataURL(file);
+  e.target.value = "";
+}
+
+function editProfileName(){
+  if(!currentUser) return;
+  const newName = window.prompt(t("prompt_new_name"), currentUser.name);
+  if(!newName || !newName.trim() || newName.trim() === currentUser.name) return;
+  const trimmed = newName.trim();
+  const users = loadUsers();
+  const idx = users.findIndex(u=>u.id === currentUser.id || u.name.toLowerCase()===currentUser.name.toLowerCase());
+  if(idx !== -1){ users[idx].name = trimmed; saveUsers(users); }
+  // Foydalanuvchining oldingi e'lonlaridagi egasi nomini ham yangilaymiz.
+  PRODUCTS.forEach(p=>{ if(p.ownerName === currentUser.name) p.ownerName = trimmed; });
+  saveState();
+  currentUser.name = trimmed;
+  try{ localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser)); }catch(e){}
+  renderAuthBtn();
+  renderProfilePage();
+}
+
+function goToMyListings(){
+  closeProfilePage();
+  showOnlyMine = true;
+  showOnlyFavorites = false;
+  renderGrid();
+  window.scrollTo({top:0, behavior:"smooth"});
 }
 
 /* ---------------- modals ---------------- */
@@ -518,6 +699,115 @@ function showToast(msg){
   setTimeout(()=>toast.classList.remove("show"), 2400);
 }
 
+/* ---------------- location picker (add listing) ---------------- */
+const DEFAULT_MAP_CENTER = {lat:41.311081, lng:69.240562}; // Toshkent markazi
+let mapPickLeaflet = null;
+let mapPickMarker = null;
+let pickedGeo = null; // {lat, lng} tanlangan joy
+let mapPickStreetLayer = null;
+let mapPickSatLayer = null;
+let mapPickLayerType = "street"; // "street" | "satellite"
+
+function openMapPicker(){
+  document.getElementById("mapPickOverlay").classList.add("show");
+  setTimeout(initMapPicker, 60);
+}
+
+function initMapPicker(){
+  const start = pickedGeo || DEFAULT_MAP_CENTER;
+  if(!mapPickLeaflet){
+    mapPickLeaflet = L.map("mapPickMap").setView([start.lat, start.lng], pickedGeo ? 15 : 11);
+
+    // Ko'cha (schematik) qatlam — OpenStreetMap
+    mapPickStreetLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap"
+    });
+
+    // Sun'iy yo'ldosh (satellite) qatlam — Esri World Imagery
+    mapPickSatLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19,
+      attribution: "Tiles &copy; Esri"
+    });
+
+    (mapPickLayerType === "satellite" ? mapPickSatLayer : mapPickStreetLayer).addTo(mapPickLeaflet);
+    updateMapLayerButtons();
+
+    mapPickMarker = L.marker([start.lat, start.lng], {draggable:true}).addTo(mapPickLeaflet);
+    mapPickMarker.on("dragend", ()=>{
+      const pos = mapPickMarker.getLatLng();
+      pickedGeo = {lat: pos.lat, lng: pos.lng};
+    });
+    mapPickLeaflet.on("click", (e)=>{
+      mapPickMarker.setLatLng(e.latlng);
+      pickedGeo = {lat: e.latlng.lat, lng: e.latlng.lng};
+    });
+  }else{
+    mapPickLeaflet.invalidateSize();
+    mapPickLeaflet.setView([start.lat, start.lng], pickedGeo ? 15 : mapPickLeaflet.getZoom());
+    mapPickMarker.setLatLng([start.lat, start.lng]);
+    updateMapLayerButtons();
+  }
+}
+
+/* Xarita / sun'iy yo'ldosh ko'rinishini almashtiradi. */
+function setMapPickLayer(type){
+  if(type === mapPickLayerType || !mapPickLeaflet) { mapPickLayerType = type; updateMapLayerButtons(); return; }
+  const from = mapPickLayerType === "satellite" ? mapPickSatLayer : mapPickStreetLayer;
+  const to = type === "satellite" ? mapPickSatLayer : mapPickStreetLayer;
+  if(from) mapPickLeaflet.removeLayer(from);
+  if(to) to.addTo(mapPickLeaflet);
+  mapPickLayerType = type;
+  updateMapLayerButtons();
+}
+
+function updateMapLayerButtons(){
+  const streetBtn = document.getElementById("mapLayerBtnStreet");
+  const satBtn = document.getElementById("mapLayerBtnSat");
+  if(streetBtn) streetBtn.classList.toggle("active", mapPickLayerType === "street");
+  if(satBtn) satBtn.classList.toggle("active", mapPickLayerType === "satellite");
+}
+
+function useMyLocationForPin(){
+  if(!navigator.geolocation){ showToast(t("toast_geo_unsupported")); return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude, longitude} = pos.coords;
+    pickedGeo = {lat: latitude, lng: longitude};
+    if(mapPickMarker) mapPickMarker.setLatLng([latitude, longitude]);
+    if(mapPickLeaflet) mapPickLeaflet.setView([latitude, longitude], 15);
+  }, ()=>{
+    showToast(t("toast_geo_denied"));
+  });
+}
+
+function confirmMapPick(){
+  if(!pickedGeo && mapPickMarker){
+    const pos = mapPickMarker.getLatLng();
+    pickedGeo = {lat: pos.lat, lng: pos.lng};
+  }
+  if(pickedGeo){
+    document.getElementById("fGeoLat").value = pickedGeo.lat;
+    document.getElementById("fGeoLng").value = pickedGeo.lng;
+    document.getElementById("geoPickedLabel").classList.remove("hidden");
+  }
+  closeModal("mapPickOverlay");
+}
+
+/* ---------------- location viewer (listing detail) ---------------- */
+let detailLeafletMap = null;
+
+function initDetailMap(geo){
+  const el = document.getElementById("detailMap");
+  if(!el || typeof L === "undefined") return;
+  if(detailLeafletMap){ detailLeafletMap.remove(); detailLeafletMap = null; }
+  detailLeafletMap = L.map("detailMap", {zoomControl:false, scrollWheelZoom:false}).setView([geo.lat, geo.lng], 14);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap"
+  }).addTo(detailLeafletMap);
+  L.marker([geo.lat, geo.lng]).addTo(detailLeafletMap);
+}
+
 function submitListing(){
   const title = document.getElementById("fTitle").value.trim();
   const price = parseInt(document.getElementById("fPrice").value, 10);
@@ -533,12 +823,17 @@ function submitListing(){
   const locName = districtObj
     ? {uz:`${locObj.name.uz}, ${districtObj.name.uz}`, ru:`${locObj.name.ru}, ${districtObj.name.ru}`, en:`${locObj.name.en}, ${districtObj.name.en}`}
     : locObj.name;
+  const geoLatRaw = document.getElementById("fGeoLat").value;
+  const geoLngRaw = document.getElementById("fGeoLng").value;
+  const geo = (geoLatRaw && geoLngRaw) ? {lat: parseFloat(geoLatRaw), lng: parseFloat(geoLngRaw)} : null;
   const newProduct = {
     id: nextId++,
     photo: currentPhotoDataUrl,
     phone,
     price, cat,
     loc: locName,
+    geo,
+    ownerName: currentUser ? currentUser.name : null,
     title: {uz:title, ru:title, en:title},
     desc: {uz:desc, ru:desc, en:desc},
     time: t('just_now')
@@ -551,8 +846,13 @@ function submitListing(){
   preview.classList.add("hidden");
   preview.src = "";
   currentPhotoDataUrl = null;
+  document.getElementById("fGeoLat").value = "";
+  document.getElementById("fGeoLng").value = "";
+  document.getElementById("geoPickedLabel").classList.add("hidden");
+  pickedGeo = null;
   closeModal("addOverlay");
   activeCat = "all";
+  showOnlyMine = false;
   renderCategories();
   renderGrid();
   document.getElementById("statLine").textContent = `🔥 ${PRODUCTS.length}+ ${t('stat')}`;
@@ -599,6 +899,12 @@ function openDetail(p){
     <div class="flex justify-between text-sm text-[var(--text-muted)] py-2.5 border-t border-[var(--border)]"><span>${t('detail_cat')}</span><span>${catObj ? catObj.name[lang] : ''}</span></div>
     <div class="flex justify-between text-sm text-[var(--text-muted)] py-2.5 border-t border-[var(--border)]"><span>${t('detail_loc')}</span><span>${p.loc[lang]}</span></div>
     ${p.phone ? `<div class="flex justify-between text-sm text-[var(--text-muted)] py-2.5 border-t border-[var(--border)]"><span>${t('detail_phone')}</span><span>${p.phone}</span></div>` : ''}
+    ${p.geo ? `
+    <div class="pt-2.5 border-t border-[var(--border)]">
+      <div class="text-sm text-[var(--text-muted)] mb-2">${t('detail_geo')}</div>
+      <div id="detailMap" class="w-full h-40 rounded-xl overflow-hidden border border-[var(--border)]"></div>
+      <a href="https://www.google.com/maps/dir/?api=1&destination=${p.geo.lat},${p.geo.lng}" target="_blank" rel="noopener" class="mt-2 w-full inline-flex items-center justify-center gap-1.5 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-lg py-2.5 font-bold text-sm">${t('btn_directions')}</a>
+    </div>` : ''}
     <div class="flex gap-2 mt-4">
       ${p.phone
         ? `<a class="flex-1 bg-[#00f2fe] text-black rounded-lg py-3.5 font-extrabold text-base flex items-center justify-center cursor-pointer" href="tel:${p.phone.replace(/\s+/g,'')}">${t('contact')}</a>`
@@ -606,11 +912,12 @@ function openDetail(p){
     </div>
     <button class="w-full mt-2 bg-transparent border border-[var(--danger)] text-[var(--danger)] rounded-lg py-3 font-bold text-base cursor-pointer" onclick="openDeleteConfirm(${p.id})">${t('btn_delete')}</button>`;
   document.getElementById("detailOverlay").classList.add("show");
+  if(p.geo) setTimeout(()=>initDetailMap(p.geo), 60);
 }
 
 document.getElementById("searchInput").addEventListener("input", renderGrid);
 
-[document.getElementById("addOverlay"), document.getElementById("detailOverlay"), document.getElementById("deleteOverlay")].forEach(ov=>{
+[document.getElementById("addOverlay"), document.getElementById("detailOverlay"), document.getElementById("deleteOverlay"), document.getElementById("mapPickOverlay")].forEach(ov=>{
   ov.addEventListener("click", e=>{ if(e.target===ov) ov.classList.remove("show"); });
 });
 
@@ -628,14 +935,19 @@ function bottomNavGo(section){
     btn.style.color = "#00f2fe"; 
   }
 
+  // Profildan boshqa bo'limga o'tilsa, profil sahifasini yopamiz
+  if(section !== "profile") closeProfilePage();
+
   if(section === "search"){
     showOnlyFavorites = false;
+    showOnlyMine = false;
     renderGrid();
     window.scrollTo({top:0, behavior:"smooth"});
     const input = document.getElementById("searchInput");
     if(input) setTimeout(()=>input.focus(), 300);
   }else if(section === "favorites"){
     showOnlyFavorites = true;
+    showOnlyMine = false;
     renderGrid();
     document.getElementById("grid").scrollIntoView({behavior:"smooth", block:"start"});
   }else if(section === "sell"){
@@ -648,7 +960,9 @@ function bottomNavGo(section){
       showToast(t("nav_pick_listing"));
     }
   }else if(section === "profile"){
-    if(currentUser){ document.getElementById("authBtn").click(); } else { showAuthGate(); }
+    // Ro'yxatdan o'tgan foydalanuvchi uchun haqiqiy profil sahifasi ochiladi —
+    // faqat sahifadagi "Chiqish" tugmasi bosilgandagina hisobdan chiqadi.
+    if(currentUser){ openProfilePage(); } else { showAuthGate(); }
   }else{
     showToast(t("nav_soon"));
   }
