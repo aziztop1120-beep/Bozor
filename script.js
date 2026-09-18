@@ -870,6 +870,13 @@ function openDeleteConfirm(id){
 
 function confirmDelete(where){
   if(pendingDeleteId == null) return;
+  const target = PRODUCTS.find(p=>p.id === pendingDeleteId);
+  if(!target || !currentUser || target.ownerName !== currentUser.name){
+    pendingDeleteId = null;
+    closeModal("deleteOverlay");
+    showToast("Faqat o'zingiz joylashtirgan e'lonni o'chira olasiz");
+    return;
+  }
   PRODUCTS = PRODUCTS.filter(p=>p.id !== pendingDeleteId);
   saveState();
   pendingDeleteId = null;
@@ -910,7 +917,7 @@ function openDetail(p){
         ? `<a class="flex-1 bg-[#00f2fe] text-black rounded-lg py-3.5 font-extrabold text-base flex items-center justify-center cursor-pointer" href="tel:${p.phone.replace(/\s+/g,'')}">${t('contact')}</a>`
         : `<button class="flex-1 bg-[#00f2fe] text-black rounded-lg py-3.5 font-extrabold text-base border-none cursor-pointer" onclick="showToast(t('contact'))">${t('contact')}</button>`}
     </div>
-    <button class="w-full mt-2 bg-transparent border border-[var(--danger)] text-[var(--danger)] rounded-lg py-3 font-bold text-base cursor-pointer" onclick="openDeleteConfirm(${p.id})">${t('btn_delete')}</button>`;
+    ${(currentUser && p.ownerName === currentUser.name) ? `<button class="w-full mt-2 bg-transparent border border-[var(--danger)] text-[var(--danger)] rounded-lg py-3 font-bold text-base cursor-pointer" onclick="openDeleteConfirm(${p.id})">${t('btn_delete')}</button>` : ''}`;
   document.getElementById("detailOverlay").classList.add("show");
   if(p.geo) setTimeout(()=>initDetailMap(p.geo), 60);
 }
